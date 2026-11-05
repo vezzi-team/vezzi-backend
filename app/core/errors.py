@@ -81,6 +81,13 @@ def error_body(code: str, message: str, details: Any = None) -> dict[str, Any]:
     return body
 
 
+# Эти ошибки формирует сам FastAPI, поэтому по умолчанию они на английском.
+FRAMEWORK_MESSAGES = {
+    404: "Такого адреса нет",
+    405: "Этот адрес не принимает такой запрос",
+}
+
+
 async def handle_app_error(_: Request, exc: AppError) -> JSONResponse:
     headers = {"WWW-Authenticate": "Bearer"} if exc.status_code == 401 else None
     return JSONResponse(
@@ -101,9 +108,8 @@ async def handle_validation_error(_: Request, exc: RequestValidationError) -> JS
 async def handle_http_exception(_: Request, exc: StarletteHTTPException) -> JSONResponse:
     status = HTTPStatus(exc.status_code)
     code = status.phrase.lower().replace(" ", "_")
-    return JSONResponse(
-        error_body(code, str(exc.detail)), status_code=exc.status_code, headers=exc.headers
-    )
+    message = FRAMEWORK_MESSAGES.get(exc.status_code, str(exc.detail))
+    return JSONResponse(error_body(code, message), status_code=exc.status_code, headers=exc.headers)
 
 
 def register_error_handlers(app: FastAPI) -> None:

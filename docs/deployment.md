@@ -1,7 +1,8 @@
 # Развёртывание на VPS
 
 Сервер: Webdock (Дания), Ubuntu 24.04, 4 vCPU / 8 ГБ / 50 ГБ, пользователь `deploy`, вход `ssh vezzi`.
-Эти шаги **ещё не выполнялись** на сервере. Выполнять по одному, проверяя вывод.
+Сервер развёрнут по этим шагам 05.11.2026: **https://vezzi.vps.webdock.cloud**. Инструкция нужна для
+обновления и повторной установки. Выполнять по одному, проверяя вывод.
 
 Схема на сервере: наружу открыт только Caddy (80/443), он сам получает HTTPS-сертификат Let's Encrypt.
 API, PostgreSQL и OSRM работают внутри Docker-сети и снаружи недоступны.
@@ -91,7 +92,8 @@ dc exec api vezzi create-admin --email <ваша почта>
 ```
 
 Каталог загружается через `/docs` под администратором (`POST /admin/catalog/imports`, поле `is_synthetic`)
-или командой `vezzi import-catalog`. Цены в текущей таблице команды растянуты на 10 дней, поэтому для демо
+или командой `vezzi import-catalog`. Файл, скопированный в контейнер через `dc cp`, потом удаляется от root:
+`dc exec -T -u root api rm -f /tmp/catalog.xlsx`. Цены в текущей таблице команды растянуты на 10 дней, поэтому для демо
 в `.env` на сервере временно нужен `OFFER_MAX_AGE_HOURS=264`. Для настоящих суточных данных верните 24.
 
 Сквозная проверка с компьютера, она проходит весь путь пользователя и удаляет за собой тестовый аккаунт:
@@ -105,9 +107,15 @@ uv run python deploy/smoke_test.py https://vezzi.vps.webdock.cloud
 ## 4. Обновление
 
 ```bash
+# на компьютере разработчика, в папке проекта
+git archive HEAD | ssh vezzi 'tar -x -C ~/vezzi-backend'
+git rev-parse --short HEAD                   # этот коммит записать в .env на сервере
+
+# на сервере
 cd ~/vezzi-backend
-git pull
-BUILD_COMMIT=$(git rev-parse --short HEAD) dc up -d --build
+nano .env                                    # BUILD_COMMIT=<коммит>
+dc up -d --build
+curl https://vezzi.vps.webdock.cloud/version
 ```
 
 Миграции применяются автоматически: сервис `migrate` запускает `alembic upgrade head` перед стартом API.

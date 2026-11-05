@@ -21,6 +21,7 @@ def test_unknown_route_uses_unified_error_format(client: TestClient) -> None:
     assert response.status_code == 404
     body = response.json()
     assert body["code"] == "not_found"
+    assert body["message"] == "Такого адреса нет"
     assert body["request_id"] == response.headers["X-Request-ID"]
 
 
@@ -28,6 +29,7 @@ def test_wrong_method(client: TestClient) -> None:
     response = client.put("/health")
     assert response.status_code == 405
     assert response.json()["code"] == "method_not_allowed"
+    assert response.json()["message"] == "Этот адрес не принимает такой запрос"
 
 
 def test_json_responses_declare_utf8(client: TestClient) -> None:
