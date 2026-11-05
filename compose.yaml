@@ -1,0 +1,54 @@
+# Базовая конфигурация. Локально к ней автоматически добавляется compose.override.yaml,
+# на сервере deploy/compose.prod.yaml (см. docs/deployment.md).
+name: vezzi
+
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-vezzi}
+      POSTGRES_USER: ${POSTGRES_USER:-vezzi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vezzi}
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  migrate:
+    build: .
+    command: ["alembic", "upgrade", "head"]
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-vezzi}:${POSTGRES_PASSWORD:-vezzi}@db:5432/${POSTGRES_DB:-vezzi}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      args:
+        BUILD_COMMIT: ${BUILD_COMMIT:-unknown}
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-vezzi}:${POSTGRES_PASSWORD:-vezzi}@db:5432/${POSTGRES_DB:-vezzi}
+      OSRM_BASE_URL: http://osrm:5000
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend:v6.0.0
+    command: ["osrm-routed", "--algorithm", "mld", "--max-table-size", "200", "/data/spb.osrm"]
+    volumes:
+      - ./data/osrm:/data:ro
+    profiles: ["routing"]
+    restart: unless-stopped
+
+volumes:
+  postgres-data:

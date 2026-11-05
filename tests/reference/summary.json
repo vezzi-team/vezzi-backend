@@ -1,0 +1,110 @@
+{
+  "source": "Умная_корзина.xlsx",
+  "now_moscow": "2026-10-30T09:00:00",
+  "chains": [
+    "Bolender Meat Company",
+    "METRO",
+    "Ароматный мир",
+    "Белорусские продукты",
+    "Бристоль",
+    "ВкусВилл",
+    "Дары природы",
+    "Дикси",
+    "Ермолино",
+    "Колхоз",
+    "Кулинария Кио",
+    "Магнит",
+    "Перекрёсток",
+    "Продстар",
+    "Пятёрочка",
+    "Рыбка & Икорка"
+  ],
+  "scenarios": {
+    "all_fresh": 264,
+    "rule_24h": 24
+  },
+  "carts_in_table": 30,
+  "carts_checked": 30,
+  "items_in_table": 148,
+  "weighted_items_excluded": 24,
+  "plans_in_table": 20,
+  "plans_with_wrong_total": [
+    {
+      "plan_id": 2,
+      "stated": "853.7",
+      "sum": "899.1"
+    },
+    {
+      "plan_id": 4,
+      "stated": "1523.1",
+      "sum": "1810.0"
+    },
+    {
+      "plan_id": 6,
+      "stated": "600.2",
+      "sum": "897.3"
+    },
+    {
+      "plan_id": 7,
+      "stated": "6759.7",
+      "sum": "8327.2"
+    },
+    {
+      "plan_id": 8,
+      "stated": "655.7",
+      "sum": "751.0"
+    },
+    {
+      "plan_id": 9,
+      "stated": "3150.4",
+      "sum": "4716.1"
+    },
+    {
+      "plan_id": 11,
+      "stated": "1027.6",
+      "sum": "1219.9"
+    },
+    {
+      "plan_id": 12,
+      "stated": "435.7",
+      "sum": "607.5"
+    },
+    {
+      "plan_id": 13,
+      "stated": "1257.2",
+      "sum": "1310.1"
+    },
+    {
+      "plan_id": 14,
+      "stated": "614.3",
+      "sum": "1107.2"
+    },
+    {
+      "plan_id": 15,
+      "stated": "456.4",
+      "sum": "807.2"
+    },
+    {
+      "plan_id": 16,
+      "stated": "1536.4",
+      "sum": "1795.3"
+    },
+    {
+      "plan_id": 18,
+      "stated": "709.4",
+      "sum": "1333.6"
+    },
+    {
+      "plan_id": 19,
+      "stated": "425",
+      "sum": "467.2"
+    }
+  ],
+  "plans_from_future": [
+    2,
+    4,
+    8,
+    19,
+    20
+  ]
+}

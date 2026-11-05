@@ -1,0 +1,961 @@
+scenario,cart_id,chain,items,found_items,coverage_percent,is_complete,found_total_rub,total_rub,rank
+all_fresh,1,Bolender Meat Company,3,0,0,False,0,,13
+all_fresh,1,METRO,3,2,66,False,380.7,,1
+all_fresh,1,Ароматный мир,3,0,0,False,0,,14
+all_fresh,1,Белорусские продукты,3,1,33,False,271.8,,6
+all_fresh,1,Бристоль,3,0,0,False,0,,15
+all_fresh,1,ВкусВилл,3,2,66,False,490.3,,2
+all_fresh,1,Дары природы,3,1,33,False,32.4,,7
+all_fresh,1,Дикси,3,2,66,False,183.2,,3
+all_fresh,1,Ермолино,3,1,33,False,146.4,,8
+all_fresh,1,Колхоз,3,1,33,False,28.8,,9
+all_fresh,1,Кулинария Кио,3,1,33,False,277.5,,10
+all_fresh,1,Магнит,3,1,33,False,127.6,,11
+all_fresh,1,Перекрёсток,3,2,66,False,309.1,,4
+all_fresh,1,Продстар,3,1,33,False,288.6,,12
+all_fresh,1,Пятёрочка,3,2,66,False,404.0,,5
+all_fresh,1,Рыбка & Икорка,3,0,0,False,0,,16
+all_fresh,2,Bolender Meat Company,5,0,0,False,0,,12
+all_fresh,2,METRO,5,3,60,False,3050.1,,4
+all_fresh,2,Ароматный мир,5,0,0,False,0,,13
+all_fresh,2,Белорусские продукты,5,2,40,False,523.7,,9
+all_fresh,2,Бристоль,5,0,0,False,0,,14
+all_fresh,2,ВкусВилл,5,4,80,False,4500.1,,2
+all_fresh,2,Дары природы,5,1,20,False,444.4,,11
+all_fresh,2,Дикси,5,5,100,True,4140.9,4140.9,1
+all_fresh,2,Ермолино,5,2,40,False,234.0,,10
+all_fresh,2,Колхоз,5,3,60,False,3613.3,,5
+all_fresh,2,Кулинария Кио,5,0,0,False,0,,15
+all_fresh,2,Магнит,5,4,80,False,948.9,,3
+all_fresh,2,Перекрёсток,5,3,60,False,985.7,,6
+all_fresh,2,Продстар,5,3,60,False,704.3,,7
+all_fresh,2,Пятёрочка,5,3,60,False,676.5,,8
+all_fresh,2,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,3,Bolender Meat Company,3,0,0,False,0,,10
+all_fresh,3,METRO,3,2,66,False,242.5,,3
+all_fresh,3,Ароматный мир,3,0,0,False,0,,11
+all_fresh,3,Белорусские продукты,3,3,100,True,539.3,539.3,1
+all_fresh,3,Бристоль,3,0,0,False,0,,12
+all_fresh,3,ВкусВилл,3,2,66,False,288.3,,4
+all_fresh,3,Дары природы,3,0,0,False,0,,13
+all_fresh,3,Дикси,3,2,66,False,395.4,,5
+all_fresh,3,Ермолино,3,2,66,False,435.8,,6
+all_fresh,3,Колхоз,3,0,0,False,0,,14
+all_fresh,3,Кулинария Кио,3,0,0,False,0,,15
+all_fresh,3,Магнит,3,3,100,True,565.9,565.9,2
+all_fresh,3,Перекрёсток,3,1,33,False,108.7,,7
+all_fresh,3,Продстар,3,1,33,False,317,,8
+all_fresh,3,Пятёрочка,3,1,33,False,147.8,,9
+all_fresh,3,Рыбка & Икорка,3,0,0,False,0,,16
+all_fresh,4,Bolender Meat Company,3,0,0,False,0,,6
+all_fresh,4,METRO,3,0,0,False,0,,7
+all_fresh,4,Ароматный мир,3,0,0,False,0,,8
+all_fresh,4,Белорусские продукты,3,0,0,False,0,,9
+all_fresh,4,Бристоль,3,0,0,False,0,,10
+all_fresh,4,ВкусВилл,3,3,100,True,239.7,239.7,1
+all_fresh,4,Дары природы,3,0,0,False,0,,11
+all_fresh,4,Дикси,3,1,33,False,38.1,,2
+all_fresh,4,Ермолино,3,1,33,False,92.7,,3
+all_fresh,4,Колхоз,3,1,33,False,98.1,,4
+all_fresh,4,Кулинария Кио,3,0,0,False,0,,12
+all_fresh,4,Магнит,3,0,0,False,0,,13
+all_fresh,4,Перекрёсток,3,1,33,False,43.9,,5
+all_fresh,4,Продстар,3,0,0,False,0,,14
+all_fresh,4,Пятёрочка,3,0,0,False,0,,15
+all_fresh,4,Рыбка & Икорка,3,0,0,False,0,,16
+all_fresh,5,Bolender Meat Company,7,1,14,False,484.4,,11
+all_fresh,5,METRO,7,4,57,False,780.2,,4
+all_fresh,5,Ароматный мир,7,1,14,False,533.9,,12
+all_fresh,5,Белорусские продукты,7,4,57,False,847.4,,5
+all_fresh,5,Бристоль,7,1,14,False,158.6,,13
+all_fresh,5,ВкусВилл,7,4,57,False,1259.5,,6
+all_fresh,5,Дары природы,7,0,0,False,0,,15
+all_fresh,5,Дикси,7,6,85,False,1278.3,,2
+all_fresh,5,Ермолино,7,3,42,False,880.6,,7
+all_fresh,5,Колхоз,7,3,42,False,721.8,,8
+all_fresh,5,Кулинария Кио,7,1,14,False,57.2,,14
+all_fresh,5,Магнит,7,7,100,True,1892.7,1892.7,1
+all_fresh,5,Перекрёсток,7,6,85,False,1955.8,,3
+all_fresh,5,Продстар,7,2,28,False,478.2,,10
+all_fresh,5,Пятёрочка,7,3,42,False,494.7,,9
+all_fresh,5,Рыбка & Икорка,7,0,0,False,0,,16
+all_fresh,6,Bolender Meat Company,5,0,0,False,0,,13
+all_fresh,6,METRO,5,4,80,False,563.5,,3
+all_fresh,6,Ароматный мир,5,0,0,False,0,,14
+all_fresh,6,Белорусские продукты,5,3,60,False,241.3,,7
+all_fresh,6,Бристоль,5,0,0,False,0,,15
+all_fresh,6,ВкусВилл,5,4,80,False,791.2,,4
+all_fresh,6,Дары природы,5,3,60,False,280.3,,8
+all_fresh,6,Дикси,5,5,100,True,763.3,763.3,1
+all_fresh,6,Ермолино,5,4,80,False,653.4,,5
+all_fresh,6,Колхоз,5,1,20,False,57.6,,11
+all_fresh,6,Кулинария Кио,5,2,40,False,126.2,,9
+all_fresh,6,Магнит,5,4,80,False,690.3,,6
+all_fresh,6,Перекрёсток,5,5,100,True,800.0,800.0,2
+all_fresh,6,Продстар,5,2,40,False,421.6,,10
+all_fresh,6,Пятёрочка,5,1,20,False,109.5,,12
+all_fresh,6,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,7,Bolender Meat Company,5,0,0,False,0,,13
+all_fresh,7,METRO,5,2,40,False,578.7,,8
+all_fresh,7,Ароматный мир,5,0,0,False,0,,14
+all_fresh,7,Белорусские продукты,5,3,60,False,603.0,,6
+all_fresh,7,Бристоль,5,2,40,False,298.1,,9
+all_fresh,7,ВкусВилл,5,2,40,False,575.5,,10
+all_fresh,7,Дары природы,5,0,0,False,0,,15
+all_fresh,7,Дикси,5,5,100,True,1174.2,1174.2,1
+all_fresh,7,Ермолино,5,3,60,False,864.7,,7
+all_fresh,7,Колхоз,5,1,20,False,585.4,,11
+all_fresh,7,Кулинария Кио,5,1,20,False,318.9,,12
+all_fresh,7,Магнит,5,4,80,False,1195.8,,3
+all_fresh,7,Перекрёсток,5,5,100,True,1264.3,1264.3,2
+all_fresh,7,Продстар,5,4,80,False,1163.5,,4
+all_fresh,7,Пятёрочка,5,4,80,False,1260.3,,5
+all_fresh,7,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,8,Bolender Meat Company,5,0,0,False,0,,14
+all_fresh,8,METRO,5,4,80,False,594.5,,3
+all_fresh,8,Ароматный мир,5,1,20,False,181.2,,9
+all_fresh,8,Белорусские продукты,5,1,20,False,354.6,,10
+all_fresh,8,Бристоль,5,2,40,False,506.2,,7
+all_fresh,8,ВкусВилл,5,3,60,False,782.1,,6
+all_fresh,8,Дары природы,5,0,0,False,0,,15
+all_fresh,8,Дикси,5,4,80,False,654.9,,4
+all_fresh,8,Ермолино,5,1,20,False,43,,11
+all_fresh,8,Колхоз,5,5,100,True,725.1,725.1,1
+all_fresh,8,Кулинария Кио,5,1,20,False,47.2,,12
+all_fresh,8,Магнит,5,4,80,False,547.3,,5
+all_fresh,8,Перекрёсток,5,5,100,True,846.5,846.5,2
+all_fresh,8,Продстар,5,2,40,False,138.2,,8
+all_fresh,8,Пятёрочка,5,1,20,False,369.6,,13
+all_fresh,8,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,9,Bolender Meat Company,6,0,0,False,0,,13
+all_fresh,9,METRO,6,3,50,False,748.4,,5
+all_fresh,9,Ароматный мир,6,0,0,False,0,,14
+all_fresh,9,Белорусские продукты,6,2,33,False,602.3,,9
+all_fresh,9,Бристоль,6,0,0,False,0,,15
+all_fresh,9,ВкусВилл,6,6,100,True,1206.9,1206.9,1
+all_fresh,9,Дары природы,6,2,33,False,702.9,,10
+all_fresh,9,Дикси,6,5,83,False,874.9,,2
+all_fresh,9,Ермолино,6,2,33,False,271.2,,11
+all_fresh,9,Колхоз,6,3,50,False,696.3,,6
+all_fresh,9,Кулинария Кио,6,1,16,False,429.4,,12
+all_fresh,9,Магнит,6,5,83,False,946.4,,3
+all_fresh,9,Перекрёсток,6,5,83,False,1015.1,,4
+all_fresh,9,Продстар,6,3,50,False,380.8,,7
+all_fresh,9,Пятёрочка,6,3,50,False,334.3,,8
+all_fresh,9,Рыбка & Икорка,6,0,0,False,0,,16
+all_fresh,10,Bolender Meat Company,6,0,0,False,0,,15
+all_fresh,10,METRO,6,4,66,False,284.7,,5
+all_fresh,10,Ароматный мир,6,1,16,False,256.8,,11
+all_fresh,10,Белорусские продукты,6,5,83,False,965.6,,2
+all_fresh,10,Бристоль,6,1,16,False,152.6,,12
+all_fresh,10,ВкусВилл,6,1,16,False,613.2,,13
+all_fresh,10,Дары природы,6,2,33,False,671.3,,10
+all_fresh,10,Дикси,6,5,83,False,890.7,,3
+all_fresh,10,Ермолино,6,3,50,False,686.6,,7
+all_fresh,10,Колхоз,6,4,66,False,869.3,,6
+all_fresh,10,Кулинария Кио,6,1,16,False,32.4,,14
+all_fresh,10,Магнит,6,6,100,True,1119.9,1119.9,1
+all_fresh,10,Перекрёсток,6,3,50,False,536.7,,8
+all_fresh,10,Продстар,6,3,50,False,671.4,,9
+all_fresh,10,Пятёрочка,6,5,83,False,604.4,,4
+all_fresh,10,Рыбка & Икорка,6,0,0,False,0,,16
+all_fresh,11,Bolender Meat Company,4,0,0,False,0,,13
+all_fresh,11,METRO,4,1,25,False,163.1,,9
+all_fresh,11,Ароматный мир,4,0,0,False,0,,14
+all_fresh,11,Белорусские продукты,4,2,50,False,493.9,,4
+all_fresh,11,Бристоль,4,2,50,False,261.2,,5
+all_fresh,11,ВкусВилл,4,3,75,False,1039.4,,2
+all_fresh,11,Дары природы,4,1,25,False,427.2,,10
+all_fresh,11,Дикси,4,3,75,False,742.1,,3
+all_fresh,11,Ермолино,4,1,25,False,112.6,,11
+all_fresh,11,Колхоз,4,0,0,False,0,,15
+all_fresh,11,Кулинария Кио,4,1,25,False,188.8,,12
+all_fresh,11,Магнит,4,2,50,False,457.8,,6
+all_fresh,11,Перекрёсток,4,4,100,True,1002.1,1002.1,1
+all_fresh,11,Продстар,4,2,50,False,741.8,,7
+all_fresh,11,Пятёрочка,4,2,50,False,532.9,,8
+all_fresh,11,Рыбка & Икорка,4,0,0,False,0,,16
+all_fresh,12,Bolender Meat Company,4,0,0,False,0,,11
+all_fresh,12,METRO,4,2,50,False,798.1,,6
+all_fresh,12,Ароматный мир,4,0,0,False,0,,12
+all_fresh,12,Белорусские продукты,4,1,25,False,53.9,,9
+all_fresh,12,Бристоль,4,0,0,False,0,,13
+all_fresh,12,ВкусВилл,4,2,50,False,922.3,,7
+all_fresh,12,Дары природы,4,1,25,False,73.2,,10
+all_fresh,12,Дикси,4,3,75,False,1451.1,,1
+all_fresh,12,Ермолино,4,2,50,False,851.7,,8
+all_fresh,12,Колхоз,4,0,0,False,0,,14
+all_fresh,12,Кулинария Кио,4,0,0,False,0,,15
+all_fresh,12,Магнит,4,3,75,False,964.5,,2
+all_fresh,12,Перекрёсток,4,3,75,False,870.0,,3
+all_fresh,12,Продстар,4,3,75,False,1039.6,,4
+all_fresh,12,Пятёрочка,4,3,75,False,972.9,,5
+all_fresh,12,Рыбка & Икорка,4,0,0,False,0,,16
+all_fresh,13,Bolender Meat Company,2,0,0,False,0,,12
+all_fresh,13,METRO,2,1,50,False,240.8,,5
+all_fresh,13,Ароматный мир,2,0,0,False,0,,13
+all_fresh,13,Белорусские продукты,2,1,50,False,494.1,,6
+all_fresh,13,Бристоль,2,0,0,False,0,,14
+all_fresh,13,ВкусВилл,2,1,50,False,281.0,,7
+all_fresh,13,Дары природы,2,2,100,True,859.6,859.6,4
+all_fresh,13,Дикси,2,2,100,True,744.9,744.9,2
+all_fresh,13,Ермолино,2,1,50,False,464.1,,8
+all_fresh,13,Колхоз,2,1,50,False,464.7,,9
+all_fresh,13,Кулинария Кио,2,0,0,False,0,,15
+all_fresh,13,Магнит,2,2,100,True,709.9,709.9,1
+all_fresh,13,Перекрёсток,2,2,100,True,798.4,798.4,3
+all_fresh,13,Продстар,2,1,50,False,224,,10
+all_fresh,13,Пятёрочка,2,1,50,False,484.8,,11
+all_fresh,13,Рыбка & Икорка,2,0,0,False,0,,16
+all_fresh,14,Bolender Meat Company,2,0,0,False,0,,11
+all_fresh,14,METRO,2,1,50,False,61.8,,3
+all_fresh,14,Ароматный мир,2,0,0,False,0,,12
+all_fresh,14,Белорусские продукты,2,1,50,False,195.7,,4
+all_fresh,14,Бристоль,2,0,0,False,0,,13
+all_fresh,14,ВкусВилл,2,2,100,True,312.6,312.6,2
+all_fresh,14,Дары природы,2,0,0,False,0,,14
+all_fresh,14,Дикси,2,1,50,False,180.9,,5
+all_fresh,14,Ермолино,2,0,0,False,0,,15
+all_fresh,14,Колхоз,2,1,50,False,61.9,,6
+all_fresh,14,Кулинария Кио,2,1,50,False,69.2,,7
+all_fresh,14,Магнит,2,1,50,False,53.2,,8
+all_fresh,14,Перекрёсток,2,1,50,False,68.3,,9
+all_fresh,14,Продстар,2,1,50,False,69,,10
+all_fresh,14,Пятёрочка,2,2,100,True,253.4,253.4,1
+all_fresh,14,Рыбка & Икорка,2,0,0,False,0,,16
+all_fresh,15,Bolender Meat Company,1,0,0,False,0,,8
+all_fresh,15,METRO,1,0,0,False,0,,9
+all_fresh,15,Ароматный мир,1,0,0,False,0,,10
+all_fresh,15,Белорусские продукты,1,1,100,True,98.6,98.6,5
+all_fresh,15,Бристоль,1,1,100,True,86.8,86.8,1
+all_fresh,15,ВкусВилл,1,0,0,False,0,,11
+all_fresh,15,Дары природы,1,0,0,False,0,,12
+all_fresh,15,Дикси,1,1,100,True,95.7,95.7,4
+all_fresh,15,Ермолино,1,1,100,True,93,93,2
+all_fresh,15,Колхоз,1,0,0,False,0,,13
+all_fresh,15,Кулинария Кио,1,0,0,False,0,,14
+all_fresh,15,Магнит,1,1,100,True,95.3,95.3,3
+all_fresh,15,Перекрёсток,1,1,100,True,104.6,104.6,7
+all_fresh,15,Продстар,1,0,0,False,0,,15
+all_fresh,15,Пятёрочка,1,1,100,True,102.3,102.3,6
+all_fresh,15,Рыбка & Икорка,1,0,0,False,0,,16
+all_fresh,16,Bolender Meat Company,4,0,0,False,0,,14
+all_fresh,16,METRO,4,3,75,False,384.3,,4
+all_fresh,16,Ароматный мир,4,0,0,False,0,,15
+all_fresh,16,Белорусские продукты,4,2,50,False,237.4,,8
+all_fresh,16,Бристоль,4,1,25,False,185.8,,11
+all_fresh,16,ВкусВилл,4,2,50,False,416.6,,9
+all_fresh,16,Дары природы,4,1,25,False,221.1,,12
+all_fresh,16,Дикси,4,4,100,True,629.0,629.0,1
+all_fresh,16,Ермолино,4,4,100,True,673.0,673.0,2
+all_fresh,16,Колхоз,4,3,75,False,527.1,,5
+all_fresh,16,Кулинария Кио,4,2,50,False,374.7,,10
+all_fresh,16,Магнит,4,1,25,False,81.8,,13
+all_fresh,16,Перекрёсток,4,4,100,True,689.7,689.7,3
+all_fresh,16,Продстар,4,3,75,False,607.2,,6
+all_fresh,16,Пятёрочка,4,3,75,False,411.8,,7
+all_fresh,16,Рыбка & Икорка,4,0,0,False,0,,16
+all_fresh,17,Bolender Meat Company,3,0,0,False,0,,11
+all_fresh,17,METRO,3,2,66,False,412.8,,1
+all_fresh,17,Ароматный мир,3,0,0,False,0,,12
+all_fresh,17,Белорусские продукты,3,2,66,False,375.9,,2
+all_fresh,17,Бристоль,3,0,0,False,0,,13
+all_fresh,17,ВкусВилл,3,2,66,False,233.3,,3
+all_fresh,17,Дары природы,3,1,33,False,89.1,,9
+all_fresh,17,Дикси,3,2,66,False,413.1,,4
+all_fresh,17,Ермолино,3,0,0,False,0,,14
+all_fresh,17,Колхоз,3,2,66,False,387.1,,5
+all_fresh,17,Кулинария Кио,3,0,0,False,0,,15
+all_fresh,17,Магнит,3,2,66,False,420.5,,6
+all_fresh,17,Перекрёсток,3,2,66,False,435.4,,7
+all_fresh,17,Продстар,3,1,33,False,78.3,,10
+all_fresh,17,Пятёрочка,3,2,66,False,399.8,,8
+all_fresh,17,Рыбка & Икорка,3,0,0,False,0,,16
+all_fresh,18,Bolender Meat Company,4,0,0,False,0,,13
+all_fresh,18,METRO,4,3,75,False,405.1,,1
+all_fresh,18,Ароматный мир,4,0,0,False,0,,14
+all_fresh,18,Белорусские продукты,4,2,50,False,339.1,,5
+all_fresh,18,Бристоль,4,0,0,False,0,,15
+all_fresh,18,ВкусВилл,4,3,75,False,509.7,,2
+all_fresh,18,Дары природы,4,1,25,False,102,,11
+all_fresh,18,Дикси,4,3,75,False,365.6,,3
+all_fresh,18,Ермолино,4,3,75,False,1249,,4
+all_fresh,18,Колхоз,4,2,50,False,275.4,,6
+all_fresh,18,Кулинария Кио,4,2,50,False,350.8,,7
+all_fresh,18,Магнит,4,2,50,False,295.2,,8
+all_fresh,18,Перекрёсток,4,2,50,False,218.4,,9
+all_fresh,18,Продстар,4,1,25,False,130.5,,12
+all_fresh,18,Пятёрочка,4,2,50,False,1112,,10
+all_fresh,18,Рыбка & Икорка,4,0,0,False,0,,16
+all_fresh,19,Bolender Meat Company,5,0,0,False,0,,14
+all_fresh,19,METRO,5,3,60,False,513.2,,6
+all_fresh,19,Ароматный мир,5,0,0,False,0,,15
+all_fresh,19,Белорусские продукты,5,3,60,False,283.0,,7
+all_fresh,19,Бристоль,5,1,20,False,156.4,,12
+all_fresh,19,ВкусВилл,5,4,80,False,872.8,,3
+all_fresh,19,Дары природы,5,2,40,False,384.9,,8
+all_fresh,19,Дикси,5,5,100,True,776.2,776.2,2
+all_fresh,19,Ермолино,5,2,40,False,474.1,,9
+all_fresh,19,Колхоз,5,2,40,False,220.1,,10
+all_fresh,19,Кулинария Кио,5,1,20,False,51.8,,13
+all_fresh,19,Магнит,5,5,100,True,726.1,726.1,1
+all_fresh,19,Перекрёсток,5,4,80,False,461.8,,4
+all_fresh,19,Продстар,5,2,40,False,246,,11
+all_fresh,19,Пятёрочка,5,4,80,False,743.1,,5
+all_fresh,19,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,20,Bolender Meat Company,5,0,0,False,0,,10
+all_fresh,20,METRO,5,4,80,False,808.0,,1
+all_fresh,20,Ароматный мир,5,0,0,False,0,,11
+all_fresh,20,Белорусские продукты,5,0,0,False,0,,12
+all_fresh,20,Бристоль,5,0,0,False,0,,13
+all_fresh,20,ВкусВилл,5,3,60,False,694.5,,5
+all_fresh,20,Дары природы,5,1,20,False,661.7,,8
+all_fresh,20,Дикси,5,4,80,False,968.3,,2
+all_fresh,20,Ермолино,5,3,60,False,550.9,,6
+all_fresh,20,Колхоз,5,1,20,False,443.6,,9
+all_fresh,20,Кулинария Кио,5,0,0,False,0,,14
+all_fresh,20,Магнит,5,4,80,False,859.8,,3
+all_fresh,20,Перекрёсток,5,4,80,False,747.2,,4
+all_fresh,20,Продстар,5,0,0,False,0,,15
+all_fresh,20,Пятёрочка,5,2,40,False,733.4,,7
+all_fresh,20,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,21,Bolender Meat Company,5,0,0,False,0,,13
+all_fresh,21,METRO,5,4,80,False,402.3,,1
+all_fresh,21,Ароматный мир,5,1,20,False,87.2,,9
+all_fresh,21,Белорусские продукты,5,1,20,False,130.4,,10
+all_fresh,21,Бристоль,5,0,0,False,0,,14
+all_fresh,21,ВкусВилл,5,3,60,False,460.7,,3
+all_fresh,21,Дары природы,5,1,20,False,155.1,,11
+all_fresh,21,Дикси,5,2,40,False,208,,6
+all_fresh,21,Ермолино,5,2,40,False,198.2,,7
+all_fresh,21,Колхоз,5,2,40,False,208.8,,8
+all_fresh,21,Кулинария Кио,5,0,0,False,0,,15
+all_fresh,21,Магнит,5,3,60,False,380.1,,4
+all_fresh,21,Перекрёсток,5,3,60,False,365.2,,5
+all_fresh,21,Продстар,5,1,20,False,134.7,,12
+all_fresh,21,Пятёрочка,5,4,80,False,368.0,,2
+all_fresh,21,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,22,Bolender Meat Company,5,0,0,False,0,,12
+all_fresh,22,METRO,5,1,20,False,42.4,,10
+all_fresh,22,Ароматный мир,5,0,0,False,0,,13
+all_fresh,22,Белорусские продукты,5,0,0,False,0,,14
+all_fresh,22,Бристоль,5,2,40,False,170.8,,9
+all_fresh,22,ВкусВилл,5,3,60,False,1674.7,,5
+all_fresh,22,Дары природы,5,1,20,False,1530.2,,11
+all_fresh,22,Дикси,5,5,100,True,1589.2,1589.2,2
+all_fresh,22,Ермолино,5,4,80,False,408.8,,3
+all_fresh,22,Колхоз,5,3,60,False,1407.5,,6
+all_fresh,22,Кулинария Кио,5,0,0,False,0,,15
+all_fresh,22,Магнит,5,5,100,True,1552.0,1552.0,1
+all_fresh,22,Перекрёсток,5,4,80,False,450.1,,4
+all_fresh,22,Продстар,5,3,60,False,1508.7,,7
+all_fresh,22,Пятёрочка,5,3,60,False,1355.6,,8
+all_fresh,22,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,23,Bolender Meat Company,4,0,0,False,0,,13
+all_fresh,23,METRO,4,1,25,False,586.3,,7
+all_fresh,23,Ароматный мир,4,0,0,False,0,,14
+all_fresh,23,Белорусские продукты,4,1,25,False,636,,8
+all_fresh,23,Бристоль,4,1,25,False,96.1,,9
+all_fresh,23,ВкусВилл,4,2,50,False,438.1,,1
+all_fresh,23,Дары природы,4,1,25,False,77.6,,10
+all_fresh,23,Дикси,4,2,50,False,711.5,,2
+all_fresh,23,Ермолино,4,2,50,False,670.5,,3
+all_fresh,23,Колхоз,4,0,0,False,0,,15
+all_fresh,23,Кулинария Кио,4,0,0,False,0,,16
+all_fresh,23,Магнит,4,2,50,False,672.8,,4
+all_fresh,23,Перекрёсток,4,1,25,False,67.2,,11
+all_fresh,23,Продстар,4,2,50,False,765.0,,5
+all_fresh,23,Пятёрочка,4,2,50,False,692.8,,6
+all_fresh,23,Рыбка & Икорка,4,1,25,False,689.8,,12
+all_fresh,24,Bolender Meat Company,4,0,0,False,0,,13
+all_fresh,24,METRO,4,2,50,False,293.6,,5
+all_fresh,24,Ароматный мир,4,0,0,False,0,,14
+all_fresh,24,Белорусские продукты,4,1,25,False,118.2,,9
+all_fresh,24,Бристоль,4,1,25,False,152.5,,10
+all_fresh,24,ВкусВилл,4,2,50,False,385.2,,6
+all_fresh,24,Дары природы,4,2,50,False,323.7,,7
+all_fresh,24,Дикси,4,3,75,False,490.9,,2
+all_fresh,24,Ермолино,4,1,25,False,169.2,,11
+all_fresh,24,Колхоз,4,1,25,False,120.6,,12
+all_fresh,24,Кулинария Кио,4,0,0,False,0,,15
+all_fresh,24,Магнит,4,3,75,False,491.3,,3
+all_fresh,24,Перекрёсток,4,3,75,False,479.6,,4
+all_fresh,24,Продстар,4,2,50,False,392.2,,8
+all_fresh,24,Пятёрочка,4,4,100,True,541.9,541.9,1
+all_fresh,24,Рыбка & Икорка,4,0,0,False,0,,16
+all_fresh,25,Bolender Meat Company,3,0,0,False,0,,14
+all_fresh,25,METRO,3,2,66,False,406.8,,4
+all_fresh,25,Ароматный мир,3,0,0,False,0,,15
+all_fresh,25,Белорусские продукты,3,1,33,False,121.4,,8
+all_fresh,25,Бристоль,3,1,33,False,372.3,,9
+all_fresh,25,ВкусВилл,3,2,66,False,647,,5
+all_fresh,25,Дары природы,3,1,33,False,354.3,,10
+all_fresh,25,Дикси,3,3,100,True,647.0,647.0,2
+all_fresh,25,Ермолино,3,2,66,False,519.1,,6
+all_fresh,25,Колхоз,3,1,33,False,256.2,,11
+all_fresh,25,Кулинария Кио,3,1,33,False,130.2,,12
+all_fresh,25,Магнит,3,3,100,True,633.4,633.4,1
+all_fresh,25,Перекрёсток,3,3,100,True,700.6,700.6,3
+all_fresh,25,Продстар,3,1,33,False,368.7,,13
+all_fresh,25,Пятёрочка,3,2,66,False,477.9,,7
+all_fresh,25,Рыбка & Икорка,3,0,0,False,0,,16
+all_fresh,26,Bolender Meat Company,4,0,0,False,0,,13
+all_fresh,26,METRO,4,2,50,False,140.6,,6
+all_fresh,26,Ароматный мир,4,0,0,False,0,,14
+all_fresh,26,Белорусские продукты,4,3,75,False,257.0,,3
+all_fresh,26,Бристоль,4,1,25,False,91.0,,7
+all_fresh,26,ВкусВилл,4,3,75,False,569.9,,4
+all_fresh,26,Дары природы,4,1,25,False,142.3,,8
+all_fresh,26,Дикси,4,4,100,True,640.7,640.7,1
+all_fresh,26,Ермолино,4,1,25,False,69.2,,9
+all_fresh,26,Колхоз,4,1,25,False,75.2,,10
+all_fresh,26,Кулинария Кио,4,0,0,False,0,,15
+all_fresh,26,Магнит,4,3,75,False,259.2,,5
+all_fresh,26,Перекрёсток,4,4,100,True,682.8,682.8,2
+all_fresh,26,Продстар,4,1,25,False,68.4,,11
+all_fresh,26,Пятёрочка,4,1,25,False,54.8,,12
+all_fresh,26,Рыбка & Икорка,4,0,0,False,0,,16
+all_fresh,27,Bolender Meat Company,5,0,0,False,0,,12
+all_fresh,27,METRO,5,5,100,True,1079.8,1079.8,1
+all_fresh,27,Ароматный мир,5,0,0,False,0,,13
+all_fresh,27,Белорусские продукты,5,1,20,False,95.6,,11
+all_fresh,27,Бристоль,5,0,0,False,0,,14
+all_fresh,27,ВкусВилл,5,4,80,False,305.8,,3
+all_fresh,27,Дары природы,5,0,0,False,0,,15
+all_fresh,27,Дикси,5,3,60,False,201.6,,7
+all_fresh,27,Ермолино,5,2,40,False,127.3,,9
+all_fresh,27,Колхоз,5,4,80,False,918.7,,4
+all_fresh,27,Кулинария Кио,5,2,40,False,111.5,,10
+all_fresh,27,Магнит,5,4,80,False,950.5,,5
+all_fresh,27,Перекрёсток,5,5,100,True,1103.5,1103.5,2
+all_fresh,27,Продстар,5,3,60,False,177.4,,8
+all_fresh,27,Пятёрочка,5,4,80,False,253.3,,6
+all_fresh,27,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,28,Bolender Meat Company,5,0,0,False,0,,14
+all_fresh,28,METRO,5,3,60,False,1226.1,,3
+all_fresh,28,Ароматный мир,5,1,20,False,112.1,,11
+all_fresh,28,Белорусские продукты,5,2,40,False,1186.3,,7
+all_fresh,28,Бристоль,5,0,0,False,0,,15
+all_fresh,28,ВкусВилл,5,2,40,False,551.7,,8
+all_fresh,28,Дары природы,5,2,40,False,1528.0,,9
+all_fresh,28,Дикси,5,3,60,False,1608.5,,4
+all_fresh,28,Ермолино,5,3,60,False,1648.2,,5
+all_fresh,28,Колхоз,5,2,40,False,417.1,,10
+all_fresh,28,Кулинария Кио,5,1,20,False,86.7,,12
+all_fresh,28,Магнит,5,3,60,False,1649.6,,6
+all_fresh,28,Перекрёсток,5,5,100,True,1945.8,1945.8,1
+all_fresh,28,Продстар,5,1,20,False,1174,,13
+all_fresh,28,Пятёрочка,5,4,80,False,1785.0,,2
+all_fresh,28,Рыбка & Икорка,5,0,0,False,0,,16
+all_fresh,29,Bolender Meat Company,4,0,0,False,0,,15
+all_fresh,29,METRO,4,3,75,False,1214.3,,2
+all_fresh,29,Ароматный мир,4,1,25,False,1064.2,,8
+all_fresh,29,Белорусские продукты,4,1,25,False,63.4,,9
+all_fresh,29,Бристоль,4,1,25,False,1172.4,,10
+all_fresh,29,ВкусВилл,4,3,75,False,404.3,,3
+all_fresh,29,Дары природы,4,1,25,False,184.8,,11
+all_fresh,29,Дикси,4,2,50,False,239.2,,5
+all_fresh,29,Ермолино,4,2,50,False,188.0,,6
+all_fresh,29,Колхоз,4,1,25,False,109.2,,12
+all_fresh,29,Кулинария Кио,4,1,25,False,141.2,,13
+all_fresh,29,Магнит,4,4,100,True,1357.1,1357.1,1
+all_fresh,29,Перекрёсток,4,3,75,False,1400.9,,4
+all_fresh,29,Продстар,4,1,25,False,65.8,,14
+all_fresh,29,Пятёрочка,4,2,50,False,1084.0,,7
+all_fresh,29,Рыбка & Икорка,4,0,0,False,0,,16
+all_fresh,30,Bolender Meat Company,3,0,0,False,0,,12
+all_fresh,30,METRO,3,2,66,False,217.9,,2
+all_fresh,30,Ароматный мир,3,0,0,False,0,,13
+all_fresh,30,Белорусские продукты,3,2,66,False,371.2,,3
+all_fresh,30,Бристоль,3,1,33,False,186.3,,10
+all_fresh,30,ВкусВилл,3,2,66,False,443.9,,4
+all_fresh,30,Дары природы,3,0,0,False,0,,14
+all_fresh,30,Дикси,3,2,66,False,360.1,,5
+all_fresh,30,Ермолино,3,2,66,False,247.3,,6
+all_fresh,30,Колхоз,3,2,66,False,257.3,,7
+all_fresh,30,Кулинария Кио,3,0,0,False,0,,15
+all_fresh,30,Магнит,3,3,100,True,430.0,430.0,1
+all_fresh,30,Перекрёсток,3,2,66,False,408.7,,8
+all_fresh,30,Продстар,3,1,33,False,205.3,,11
+all_fresh,30,Пятёрочка,3,2,66,False,271.5,,9
+all_fresh,30,Рыбка & Икорка,3,0,0,False,0,,16
+rule_24h,1,Bolender Meat Company,3,0,0,False,0,,4
+rule_24h,1,METRO,3,0,0,False,0,,5
+rule_24h,1,Ароматный мир,3,0,0,False,0,,6
+rule_24h,1,Белорусские продукты,3,0,0,False,0,,7
+rule_24h,1,Бристоль,3,0,0,False,0,,8
+rule_24h,1,ВкусВилл,3,0,0,False,0,,9
+rule_24h,1,Дары природы,3,0,0,False,0,,10
+rule_24h,1,Дикси,3,1,33,False,33.6,,1
+rule_24h,1,Ермолино,3,0,0,False,0,,11
+rule_24h,1,Колхоз,3,0,0,False,0,,12
+rule_24h,1,Кулинария Кио,3,1,33,False,277.5,,2
+rule_24h,1,Магнит,3,1,33,False,127.6,,3
+rule_24h,1,Перекрёсток,3,0,0,False,0,,13
+rule_24h,1,Продстар,3,0,0,False,0,,14
+rule_24h,1,Пятёрочка,3,0,0,False,0,,15
+rule_24h,1,Рыбка & Икорка,3,0,0,False,0,,16
+rule_24h,2,Bolender Meat Company,5,0,0,False,0,,5
+rule_24h,2,METRO,5,0,0,False,0,,6
+rule_24h,2,Ароматный мир,5,0,0,False,0,,7
+rule_24h,2,Белорусские продукты,5,0,0,False,0,,8
+rule_24h,2,Бристоль,5,0,0,False,0,,9
+rule_24h,2,ВкусВилл,5,0,0,False,0,,10
+rule_24h,2,Дары природы,5,0,0,False,0,,11
+rule_24h,2,Дикси,5,1,20,False,426.6,,1
+rule_24h,2,Ермолино,5,0,0,False,0,,12
+rule_24h,2,Колхоз,5,0,0,False,0,,13
+rule_24h,2,Кулинария Кио,5,0,0,False,0,,14
+rule_24h,2,Магнит,5,1,20,False,369.8,,2
+rule_24h,2,Перекрёсток,5,0,0,False,0,,15
+rule_24h,2,Продстар,5,1,20,False,161.4,,3
+rule_24h,2,Пятёрочка,5,1,20,False,419.4,,4
+rule_24h,2,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,3,Bolender Meat Company,3,0,0,False,0,,3
+rule_24h,3,METRO,3,0,0,False,0,,4
+rule_24h,3,Ароматный мир,3,0,0,False,0,,5
+rule_24h,3,Белорусские продукты,3,0,0,False,0,,6
+rule_24h,3,Бристоль,3,0,0,False,0,,7
+rule_24h,3,ВкусВилл,3,0,0,False,0,,8
+rule_24h,3,Дары природы,3,0,0,False,0,,9
+rule_24h,3,Дикси,3,0,0,False,0,,10
+rule_24h,3,Ермолино,3,1,33,False,278.8,,1
+rule_24h,3,Колхоз,3,0,0,False,0,,11
+rule_24h,3,Кулинария Кио,3,0,0,False,0,,12
+rule_24h,3,Магнит,3,1,33,False,99.7,,2
+rule_24h,3,Перекрёсток,3,0,0,False,0,,13
+rule_24h,3,Продстар,3,0,0,False,0,,14
+rule_24h,3,Пятёрочка,3,0,0,False,0,,15
+rule_24h,3,Рыбка & Икорка,3,0,0,False,0,,16
+rule_24h,4,Bolender Meat Company,3,0,0,False,0,,1
+rule_24h,4,METRO,3,0,0,False,0,,2
+rule_24h,4,Ароматный мир,3,0,0,False,0,,3
+rule_24h,4,Белорусские продукты,3,0,0,False,0,,4
+rule_24h,4,Бристоль,3,0,0,False,0,,5
+rule_24h,4,ВкусВилл,3,0,0,False,0,,6
+rule_24h,4,Дары природы,3,0,0,False,0,,7
+rule_24h,4,Дикси,3,0,0,False,0,,8
+rule_24h,4,Ермолино,3,0,0,False,0,,9
+rule_24h,4,Колхоз,3,0,0,False,0,,10
+rule_24h,4,Кулинария Кио,3,0,0,False,0,,11
+rule_24h,4,Магнит,3,0,0,False,0,,12
+rule_24h,4,Перекрёсток,3,0,0,False,0,,13
+rule_24h,4,Продстар,3,0,0,False,0,,14
+rule_24h,4,Пятёрочка,3,0,0,False,0,,15
+rule_24h,4,Рыбка & Икорка,3,0,0,False,0,,16
+rule_24h,5,Bolender Meat Company,7,0,0,False,0,,6
+rule_24h,5,METRO,7,1,14,False,141.4,,2
+rule_24h,5,Ароматный мир,7,0,0,False,0,,7
+rule_24h,5,Белорусские продукты,7,1,14,False,53.1,,3
+rule_24h,5,Бристоль,7,0,0,False,0,,8
+rule_24h,5,ВкусВилл,7,0,0,False,0,,9
+rule_24h,5,Дары природы,7,0,0,False,0,,10
+rule_24h,5,Дикси,7,2,28,False,680.3,,1
+rule_24h,5,Ермолино,7,0,0,False,0,,11
+rule_24h,5,Колхоз,7,0,0,False,0,,12
+rule_24h,5,Кулинария Кио,7,0,0,False,0,,13
+rule_24h,5,Магнит,7,1,14,False,154.5,,4
+rule_24h,5,Перекрёсток,7,0,0,False,0,,14
+rule_24h,5,Продстар,7,1,14,False,421.2,,5
+rule_24h,5,Пятёрочка,7,0,0,False,0,,15
+rule_24h,5,Рыбка & Икорка,7,0,0,False,0,,16
+rule_24h,6,Bolender Meat Company,5,0,0,False,0,,8
+rule_24h,6,METRO,5,1,20,False,268.6,,2
+rule_24h,6,Ароматный мир,5,0,0,False,0,,9
+rule_24h,6,Белорусские продукты,5,1,20,False,70.8,,3
+rule_24h,6,Бристоль,5,0,0,False,0,,10
+rule_24h,6,ВкусВилл,5,0,0,False,0,,11
+rule_24h,6,Дары природы,5,0,0,False,0,,12
+rule_24h,6,Дикси,5,1,20,False,201.5,,4
+rule_24h,6,Ермолино,5,1,20,False,197.8,,5
+rule_24h,6,Колхоз,5,0,0,False,0,,13
+rule_24h,6,Кулинария Кио,5,0,0,False,0,,14
+rule_24h,6,Магнит,5,2,40,False,433.5,,1
+rule_24h,6,Перекрёсток,5,1,20,False,72,,6
+rule_24h,6,Продстар,5,1,20,False,74.6,,7
+rule_24h,6,Пятёрочка,5,0,0,False,0,,15
+rule_24h,6,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,7,Bolender Meat Company,5,0,0,False,0,,4
+rule_24h,7,METRO,5,0,0,False,0,,5
+rule_24h,7,Ароматный мир,5,0,0,False,0,,6
+rule_24h,7,Белорусские продукты,5,2,40,False,232.8,,1
+rule_24h,7,Бристоль,5,0,0,False,0,,7
+rule_24h,7,ВкусВилл,5,1,20,False,432.9,,2
+rule_24h,7,Дары природы,5,0,0,False,0,,8
+rule_24h,7,Дикси,5,0,0,False,0,,9
+rule_24h,7,Ермолино,5,0,0,False,0,,10
+rule_24h,7,Колхоз,5,0,0,False,0,,11
+rule_24h,7,Кулинария Кио,5,0,0,False,0,,12
+rule_24h,7,Магнит,5,0,0,False,0,,13
+rule_24h,7,Перекрёсток,5,1,20,False,538.6,,3
+rule_24h,7,Продстар,5,0,0,False,0,,14
+rule_24h,7,Пятёрочка,5,0,0,False,0,,15
+rule_24h,7,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,8,Bolender Meat Company,5,0,0,False,0,,6
+rule_24h,8,METRO,5,0,0,False,0,,7
+rule_24h,8,Ароматный мир,5,0,0,False,0,,8
+rule_24h,8,Белорусские продукты,5,0,0,False,0,,9
+rule_24h,8,Бристоль,5,0,0,False,0,,10
+rule_24h,8,ВкусВилл,5,0,0,False,0,,11
+rule_24h,8,Дары природы,5,0,0,False,0,,12
+rule_24h,8,Дикси,5,1,20,False,37.9,,2
+rule_24h,8,Ермолино,5,0,0,False,0,,13
+rule_24h,8,Колхоз,5,2,40,False,403.8,,1
+rule_24h,8,Кулинария Кио,5,0,0,False,0,,14
+rule_24h,8,Магнит,5,1,20,False,37.4,,3
+rule_24h,8,Перекрёсток,5,1,20,False,487.2,,4
+rule_24h,8,Продстар,5,1,20,False,46.7,,5
+rule_24h,8,Пятёрочка,5,0,0,False,0,,15
+rule_24h,8,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,9,Bolender Meat Company,6,0,0,False,0,,5
+rule_24h,9,METRO,6,0,0,False,0,,6
+rule_24h,9,Ароматный мир,6,0,0,False,0,,7
+rule_24h,9,Белорусские продукты,6,0,0,False,0,,8
+rule_24h,9,Бристоль,6,0,0,False,0,,9
+rule_24h,9,ВкусВилл,6,0,0,False,0,,10
+rule_24h,9,Дары природы,6,1,16,False,134.1,,1
+rule_24h,9,Дикси,6,1,16,False,67.4,,2
+rule_24h,9,Ермолино,6,0,0,False,0,,11
+rule_24h,9,Колхоз,6,0,0,False,0,,12
+rule_24h,9,Кулинария Кио,6,0,0,False,0,,13
+rule_24h,9,Магнит,6,1,16,False,463.4,,3
+rule_24h,9,Перекрёсток,6,1,16,False,468.2,,4
+rule_24h,9,Продстар,6,0,0,False,0,,14
+rule_24h,9,Пятёрочка,6,0,0,False,0,,15
+rule_24h,9,Рыбка & Икорка,6,0,0,False,0,,16
+rule_24h,10,Bolender Meat Company,6,0,0,False,0,,5
+rule_24h,10,METRO,6,0,0,False,0,,6
+rule_24h,10,Ароматный мир,6,0,0,False,0,,7
+rule_24h,10,Белорусские продукты,6,2,33,False,341.6,,1
+rule_24h,10,Бристоль,6,0,0,False,0,,8
+rule_24h,10,ВкусВилл,6,0,0,False,0,,9
+rule_24h,10,Дары природы,6,0,0,False,0,,10
+rule_24h,10,Дикси,6,0,0,False,0,,11
+rule_24h,10,Ермолино,6,0,0,False,0,,12
+rule_24h,10,Колхоз,6,0,0,False,0,,13
+rule_24h,10,Кулинария Кио,6,0,0,False,0,,14
+rule_24h,10,Магнит,6,1,16,False,88.5,,2
+rule_24h,10,Перекрёсток,6,1,16,False,40.7,,3
+rule_24h,10,Продстар,6,0,0,False,0,,15
+rule_24h,10,Пятёрочка,6,1,16,False,38,,4
+rule_24h,10,Рыбка & Икорка,6,0,0,False,0,,16
+rule_24h,11,Bolender Meat Company,4,0,0,False,0,,3
+rule_24h,11,METRO,4,0,0,False,0,,4
+rule_24h,11,Ароматный мир,4,0,0,False,0,,5
+rule_24h,11,Белорусские продукты,4,1,25,False,362.2,,1
+rule_24h,11,Бристоль,4,0,0,False,0,,6
+rule_24h,11,ВкусВилл,4,0,0,False,0,,7
+rule_24h,11,Дары природы,4,0,0,False,0,,8
+rule_24h,11,Дикси,4,1,25,False,352.6,,2
+rule_24h,11,Ермолино,4,0,0,False,0,,9
+rule_24h,11,Колхоз,4,0,0,False,0,,10
+rule_24h,11,Кулинария Кио,4,0,0,False,0,,11
+rule_24h,11,Магнит,4,0,0,False,0,,12
+rule_24h,11,Перекрёсток,4,0,0,False,0,,13
+rule_24h,11,Продстар,4,0,0,False,0,,14
+rule_24h,11,Пятёрочка,4,0,0,False,0,,15
+rule_24h,11,Рыбка & Икорка,4,0,0,False,0,,16
+rule_24h,12,Bolender Meat Company,4,0,0,False,0,,5
+rule_24h,12,METRO,4,0,0,False,0,,6
+rule_24h,12,Ароматный мир,4,0,0,False,0,,7
+rule_24h,12,Белорусские продукты,4,0,0,False,0,,8
+rule_24h,12,Бристоль,4,0,0,False,0,,9
+rule_24h,12,ВкусВилл,4,1,25,False,70.5,,1
+rule_24h,12,Дары природы,4,0,0,False,0,,10
+rule_24h,12,Дикси,4,1,25,False,644.7,,2
+rule_24h,12,Ермолино,4,0,0,False,0,,11
+rule_24h,12,Колхоз,4,0,0,False,0,,12
+rule_24h,12,Кулинария Кио,4,0,0,False,0,,13
+rule_24h,12,Магнит,4,0,0,False,0,,14
+rule_24h,12,Перекрёсток,4,1,25,False,773.9,,3
+rule_24h,12,Продстар,4,0,0,False,0,,15
+rule_24h,12,Пятёрочка,4,1,25,False,58.2,,4
+rule_24h,12,Рыбка & Икорка,4,0,0,False,0,,16
+rule_24h,13,Bolender Meat Company,2,0,0,False,0,,3
+rule_24h,13,METRO,2,0,0,False,0,,4
+rule_24h,13,Ароматный мир,2,0,0,False,0,,5
+rule_24h,13,Белорусские продукты,2,1,50,False,494.1,,1
+rule_24h,13,Бристоль,2,0,0,False,0,,6
+rule_24h,13,ВкусВилл,2,0,0,False,0,,7
+rule_24h,13,Дары природы,2,0,0,False,0,,8
+rule_24h,13,Дикси,2,0,0,False,0,,9
+rule_24h,13,Ермолино,2,0,0,False,0,,10
+rule_24h,13,Колхоз,2,0,0,False,0,,11
+rule_24h,13,Кулинария Кио,2,0,0,False,0,,12
+rule_24h,13,Магнит,2,0,0,False,0,,13
+rule_24h,13,Перекрёсток,2,0,0,False,0,,14
+rule_24h,13,Продстар,2,1,50,False,224,,2
+rule_24h,13,Пятёрочка,2,0,0,False,0,,15
+rule_24h,13,Рыбка & Икорка,2,0,0,False,0,,16
+rule_24h,14,Bolender Meat Company,2,0,0,False,0,,2
+rule_24h,14,METRO,2,0,0,False,0,,3
+rule_24h,14,Ароматный мир,2,0,0,False,0,,4
+rule_24h,14,Белорусские продукты,2,0,0,False,0,,5
+rule_24h,14,Бристоль,2,0,0,False,0,,6
+rule_24h,14,ВкусВилл,2,1,50,False,233.3,,1
+rule_24h,14,Дары природы,2,0,0,False,0,,7
+rule_24h,14,Дикси,2,0,0,False,0,,8
+rule_24h,14,Ермолино,2,0,0,False,0,,9
+rule_24h,14,Колхоз,2,0,0,False,0,,10
+rule_24h,14,Кулинария Кио,2,0,0,False,0,,11
+rule_24h,14,Магнит,2,0,0,False,0,,12
+rule_24h,14,Перекрёсток,2,0,0,False,0,,13
+rule_24h,14,Продстар,2,0,0,False,0,,14
+rule_24h,14,Пятёрочка,2,0,0,False,0,,15
+rule_24h,14,Рыбка & Икорка,2,0,0,False,0,,16
+rule_24h,15,Bolender Meat Company,1,0,0,False,0,,2
+rule_24h,15,METRO,1,0,0,False,0,,3
+rule_24h,15,Ароматный мир,1,0,0,False,0,,4
+rule_24h,15,Белорусские продукты,1,1,100,True,98.6,98.6,1
+rule_24h,15,Бристоль,1,0,0,False,0,,5
+rule_24h,15,ВкусВилл,1,0,0,False,0,,6
+rule_24h,15,Дары природы,1,0,0,False,0,,7
+rule_24h,15,Дикси,1,0,0,False,0,,8
+rule_24h,15,Ермолино,1,0,0,False,0,,9
+rule_24h,15,Колхоз,1,0,0,False,0,,10
+rule_24h,15,Кулинария Кио,1,0,0,False,0,,11
+rule_24h,15,Магнит,1,0,0,False,0,,12
+rule_24h,15,Перекрёсток,1,0,0,False,0,,13
+rule_24h,15,Продстар,1,0,0,False,0,,14
+rule_24h,15,Пятёрочка,1,0,0,False,0,,15
+rule_24h,15,Рыбка & Икорка,1,0,0,False,0,,16
+rule_24h,16,Bolender Meat Company,4,0,0,False,0,,4
+rule_24h,16,METRO,4,0,0,False,0,,5
+rule_24h,16,Ароматный мир,4,0,0,False,0,,6
+rule_24h,16,Белорусские продукты,4,0,0,False,0,,7
+rule_24h,16,Бристоль,4,0,0,False,0,,8
+rule_24h,16,ВкусВилл,4,0,0,False,0,,9
+rule_24h,16,Дары природы,4,0,0,False,0,,10
+rule_24h,16,Дикси,4,2,50,False,220.4,,1
+rule_24h,16,Ермолино,4,0,0,False,0,,11
+rule_24h,16,Колхоз,4,0,0,False,0,,12
+rule_24h,16,Кулинария Кио,4,1,25,False,227.4,,3
+rule_24h,16,Магнит,4,0,0,False,0,,13
+rule_24h,16,Перекрёсток,4,2,50,False,288.4,,2
+rule_24h,16,Продстар,4,0,0,False,0,,14
+rule_24h,16,Пятёрочка,4,0,0,False,0,,15
+rule_24h,16,Рыбка & Икорка,4,0,0,False,0,,16
+rule_24h,17,Bolender Meat Company,3,0,0,False,0,,2
+rule_24h,17,METRO,3,0,0,False,0,,3
+rule_24h,17,Ароматный мир,3,0,0,False,0,,4
+rule_24h,17,Белорусские продукты,3,0,0,False,0,,5
+rule_24h,17,Бристоль,3,0,0,False,0,,6
+rule_24h,17,ВкусВилл,3,0,0,False,0,,7
+rule_24h,17,Дары природы,3,0,0,False,0,,8
+rule_24h,17,Дикси,3,1,33,False,340.6,,1
+rule_24h,17,Ермолино,3,0,0,False,0,,9
+rule_24h,17,Колхоз,3,0,0,False,0,,10
+rule_24h,17,Кулинария Кио,3,0,0,False,0,,11
+rule_24h,17,Магнит,3,0,0,False,0,,12
+rule_24h,17,Перекрёсток,3,0,0,False,0,,13
+rule_24h,17,Продстар,3,0,0,False,0,,14
+rule_24h,17,Пятёрочка,3,0,0,False,0,,15
+rule_24h,17,Рыбка & Икорка,3,0,0,False,0,,16
+rule_24h,18,Bolender Meat Company,4,0,0,False,0,,2
+rule_24h,18,METRO,4,0,0,False,0,,3
+rule_24h,18,Ароматный мир,4,0,0,False,0,,4
+rule_24h,18,Белорусские продукты,4,0,0,False,0,,5
+rule_24h,18,Бристоль,4,0,0,False,0,,6
+rule_24h,18,ВкусВилл,4,0,0,False,0,,7
+rule_24h,18,Дары природы,4,0,0,False,0,,8
+rule_24h,18,Дикси,4,0,0,False,0,,9
+rule_24h,18,Ермолино,4,0,0,False,0,,10
+rule_24h,18,Колхоз,4,0,0,False,0,,11
+rule_24h,18,Кулинария Кио,4,0,0,False,0,,12
+rule_24h,18,Магнит,4,0,0,False,0,,13
+rule_24h,18,Перекрёсток,4,0,0,False,0,,14
+rule_24h,18,Продстар,4,0,0,False,0,,15
+rule_24h,18,Пятёрочка,4,1,25,False,215,,1
+rule_24h,18,Рыбка & Икорка,4,0,0,False,0,,16
+rule_24h,19,Bolender Meat Company,5,0,0,False,0,,5
+rule_24h,19,METRO,5,1,20,False,145.7,,1
+rule_24h,19,Ароматный мир,5,0,0,False,0,,6
+rule_24h,19,Белорусские продукты,5,0,0,False,0,,7
+rule_24h,19,Бристоль,5,0,0,False,0,,8
+rule_24h,19,ВкусВилл,5,0,0,False,0,,9
+rule_24h,19,Дары природы,5,0,0,False,0,,10
+rule_24h,19,Дикси,5,0,0,False,0,,11
+rule_24h,19,Ермолино,5,1,20,False,300.4,,2
+rule_24h,19,Колхоз,5,0,0,False,0,,12
+rule_24h,19,Кулинария Кио,5,0,0,False,0,,13
+rule_24h,19,Магнит,5,1,20,False,152.1,,3
+rule_24h,19,Перекрёсток,5,1,20,False,170.7,,4
+rule_24h,19,Продстар,5,0,0,False,0,,14
+rule_24h,19,Пятёрочка,5,0,0,False,0,,15
+rule_24h,19,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,20,Bolender Meat Company,5,0,0,False,0,,4
+rule_24h,20,METRO,5,1,20,False,431.4,,1
+rule_24h,20,Ароматный мир,5,0,0,False,0,,5
+rule_24h,20,Белорусские продукты,5,0,0,False,0,,6
+rule_24h,20,Бристоль,5,0,0,False,0,,7
+rule_24h,20,ВкусВилл,5,0,0,False,0,,8
+rule_24h,20,Дары природы,5,0,0,False,0,,9
+rule_24h,20,Дикси,5,1,20,False,243.4,,2
+rule_24h,20,Ермолино,5,1,20,False,83.8,,3
+rule_24h,20,Колхоз,5,0,0,False,0,,10
+rule_24h,20,Кулинария Кио,5,0,0,False,0,,11
+rule_24h,20,Магнит,5,0,0,False,0,,12
+rule_24h,20,Перекрёсток,5,0,0,False,0,,13
+rule_24h,20,Продстар,5,0,0,False,0,,14
+rule_24h,20,Пятёрочка,5,0,0,False,0,,15
+rule_24h,20,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,21,Bolender Meat Company,5,0,0,False,0,,3
+rule_24h,21,METRO,5,0,0,False,0,,4
+rule_24h,21,Ароматный мир,5,0,0,False,0,,5
+rule_24h,21,Белорусские продукты,5,0,0,False,0,,6
+rule_24h,21,Бристоль,5,0,0,False,0,,7
+rule_24h,21,ВкусВилл,5,0,0,False,0,,8
+rule_24h,21,Дары природы,5,0,0,False,0,,9
+rule_24h,21,Дикси,5,0,0,False,0,,10
+rule_24h,21,Ермолино,5,0,0,False,0,,11
+rule_24h,21,Колхоз,5,1,20,False,86,,1
+rule_24h,21,Кулинария Кио,5,0,0,False,0,,12
+rule_24h,21,Магнит,5,0,0,False,0,,13
+rule_24h,21,Перекрёсток,5,0,0,False,0,,14
+rule_24h,21,Продстар,5,0,0,False,0,,15
+rule_24h,21,Пятёрочка,5,1,20,False,132.2,,2
+rule_24h,21,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,22,Bolender Meat Company,5,0,0,False,0,,3
+rule_24h,22,METRO,5,0,0,False,0,,4
+rule_24h,22,Ароматный мир,5,0,0,False,0,,5
+rule_24h,22,Белорусские продукты,5,0,0,False,0,,6
+rule_24h,22,Бристоль,5,0,0,False,0,,7
+rule_24h,22,ВкусВилл,5,0,0,False,0,,8
+rule_24h,22,Дары природы,5,0,0,False,0,,9
+rule_24h,22,Дикси,5,0,0,False,0,,10
+rule_24h,22,Ермолино,5,0,0,False,0,,11
+rule_24h,22,Колхоз,5,0,0,False,0,,12
+rule_24h,22,Кулинария Кио,5,0,0,False,0,,13
+rule_24h,22,Магнит,5,0,0,False,0,,14
+rule_24h,22,Перекрёсток,5,1,20,False,209.3,,1
+rule_24h,22,Продстар,5,1,20,False,1318.4,,2
+rule_24h,22,Пятёрочка,5,0,0,False,0,,15
+rule_24h,22,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,23,Bolender Meat Company,4,0,0,False,0,,3
+rule_24h,23,METRO,4,0,0,False,0,,4
+rule_24h,23,Ароматный мир,4,0,0,False,0,,5
+rule_24h,23,Белорусские продукты,4,0,0,False,0,,6
+rule_24h,23,Бристоль,4,0,0,False,0,,7
+rule_24h,23,ВкусВилл,4,0,0,False,0,,8
+rule_24h,23,Дары природы,4,1,25,False,77.6,,1
+rule_24h,23,Дикси,4,0,0,False,0,,9
+rule_24h,23,Ермолино,4,0,0,False,0,,10
+rule_24h,23,Колхоз,4,0,0,False,0,,11
+rule_24h,23,Кулинария Кио,4,0,0,False,0,,12
+rule_24h,23,Магнит,4,1,25,False,61.2,,2
+rule_24h,23,Перекрёсток,4,0,0,False,0,,13
+rule_24h,23,Продстар,4,0,0,False,0,,14
+rule_24h,23,Пятёрочка,4,0,0,False,0,,15
+rule_24h,23,Рыбка & Икорка,4,0,0,False,0,,16
+rule_24h,24,Bolender Meat Company,4,0,0,False,0,,5
+rule_24h,24,METRO,4,1,25,False,158.1,,1
+rule_24h,24,Ароматный мир,4,0,0,False,0,,6
+rule_24h,24,Белорусские продукты,4,0,0,False,0,,7
+rule_24h,24,Бристоль,4,0,0,False,0,,8
+rule_24h,24,ВкусВилл,4,0,0,False,0,,9
+rule_24h,24,Дары природы,4,1,25,False,115.7,,2
+rule_24h,24,Дикси,4,0,0,False,0,,10
+rule_24h,24,Ермолино,4,0,0,False,0,,11
+rule_24h,24,Колхоз,4,1,25,False,120.6,,3
+rule_24h,24,Кулинария Кио,4,0,0,False,0,,12
+rule_24h,24,Магнит,4,0,0,False,0,,13
+rule_24h,24,Перекрёсток,4,1,25,False,162.4,,4
+rule_24h,24,Продстар,4,0,0,False,0,,14
+rule_24h,24,Пятёрочка,4,0,0,False,0,,15
+rule_24h,24,Рыбка & Икорка,4,0,0,False,0,,16
+rule_24h,25,Bolender Meat Company,3,0,0,False,0,,4
+rule_24h,25,METRO,3,0,0,False,0,,5
+rule_24h,25,Ароматный мир,3,0,0,False,0,,6
+rule_24h,25,Белорусские продукты,3,0,0,False,0,,7
+rule_24h,25,Бристоль,3,0,0,False,0,,8
+rule_24h,25,ВкусВилл,3,1,33,False,417,,1
+rule_24h,25,Дары природы,3,0,0,False,0,,9
+rule_24h,25,Дикси,3,1,33,False,188.7,,2
+rule_24h,25,Ермолино,3,0,0,False,0,,10
+rule_24h,25,Колхоз,3,0,0,False,0,,11
+rule_24h,25,Кулинария Кио,3,0,0,False,0,,12
+rule_24h,25,Магнит,3,1,33,False,186.5,,3
+rule_24h,25,Перекрёсток,3,0,0,False,0,,13
+rule_24h,25,Продстар,3,0,0,False,0,,14
+rule_24h,25,Пятёрочка,3,0,0,False,0,,15
+rule_24h,25,Рыбка & Икорка,3,0,0,False,0,,16
+rule_24h,26,Bolender Meat Company,4,0,0,False,0,,2
+rule_24h,26,METRO,4,1,25,False,79.0,,1
+rule_24h,26,Ароматный мир,4,0,0,False,0,,3
+rule_24h,26,Белорусские продукты,4,0,0,False,0,,4
+rule_24h,26,Бристоль,4,0,0,False,0,,5
+rule_24h,26,ВкусВилл,4,0,0,False,0,,6
+rule_24h,26,Дары природы,4,0,0,False,0,,7
+rule_24h,26,Дикси,4,0,0,False,0,,8
+rule_24h,26,Ермолино,4,0,0,False,0,,9
+rule_24h,26,Колхоз,4,0,0,False,0,,10
+rule_24h,26,Кулинария Кио,4,0,0,False,0,,11
+rule_24h,26,Магнит,4,0,0,False,0,,12
+rule_24h,26,Перекрёсток,4,0,0,False,0,,13
+rule_24h,26,Продстар,4,0,0,False,0,,14
+rule_24h,26,Пятёрочка,4,0,0,False,0,,15
+rule_24h,26,Рыбка & Икорка,4,0,0,False,0,,16
+rule_24h,27,Bolender Meat Company,5,0,0,False,0,,3
+rule_24h,27,METRO,5,1,20,False,66.2,,1
+rule_24h,27,Ароматный мир,5,0,0,False,0,,4
+rule_24h,27,Белорусские продукты,5,0,0,False,0,,5
+rule_24h,27,Бристоль,5,0,0,False,0,,6
+rule_24h,27,ВкусВилл,5,0,0,False,0,,7
+rule_24h,27,Дары природы,5,0,0,False,0,,8
+rule_24h,27,Дикси,5,0,0,False,0,,9
+rule_24h,27,Ермолино,5,0,0,False,0,,10
+rule_24h,27,Колхоз,5,0,0,False,0,,11
+rule_24h,27,Кулинария Кио,5,0,0,False,0,,12
+rule_24h,27,Магнит,5,1,20,False,90,,2
+rule_24h,27,Перекрёсток,5,0,0,False,0,,13
+rule_24h,27,Продстар,5,0,0,False,0,,14
+rule_24h,27,Пятёрочка,5,0,0,False,0,,15
+rule_24h,27,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,28,Bolender Meat Company,5,0,0,False,0,,4
+rule_24h,28,METRO,5,0,0,False,0,,5
+rule_24h,28,Ароматный мир,5,1,20,False,112.1,,1
+rule_24h,28,Белорусские продукты,5,0,0,False,0,,6
+rule_24h,28,Бристоль,5,0,0,False,0,,7
+rule_24h,28,ВкусВилл,5,0,0,False,0,,8
+rule_24h,28,Дары природы,5,0,0,False,0,,9
+rule_24h,28,Дикси,5,0,0,False,0,,10
+rule_24h,28,Ермолино,5,0,0,False,0,,11
+rule_24h,28,Колхоз,5,0,0,False,0,,12
+rule_24h,28,Кулинария Кио,5,0,0,False,0,,13
+rule_24h,28,Магнит,5,0,0,False,0,,14
+rule_24h,28,Перекрёсток,5,1,20,False,407.4,,2
+rule_24h,28,Продстар,5,0,0,False,0,,15
+rule_24h,28,Пятёрочка,5,1,20,False,380.1,,3
+rule_24h,28,Рыбка & Икорка,5,0,0,False,0,,16
+rule_24h,29,Bolender Meat Company,4,0,0,False,0,,3
+rule_24h,29,METRO,4,1,25,False,123,,1
+rule_24h,29,Ароматный мир,4,0,0,False,0,,4
+rule_24h,29,Белорусские продукты,4,0,0,False,0,,5
+rule_24h,29,Бристоль,4,0,0,False,0,,6
+rule_24h,29,ВкусВилл,4,0,0,False,0,,7
+rule_24h,29,Дары природы,4,0,0,False,0,,8
+rule_24h,29,Дикси,4,0,0,False,0,,9
+rule_24h,29,Ермолино,4,0,0,False,0,,10
+rule_24h,29,Колхоз,4,0,0,False,0,,11
+rule_24h,29,Кулинария Кио,4,0,0,False,0,,12
+rule_24h,29,Магнит,4,1,25,False,55.7,,2
+rule_24h,29,Перекрёсток,4,0,0,False,0,,13
+rule_24h,29,Продстар,4,0,0,False,0,,14
+rule_24h,29,Пятёрочка,4,0,0,False,0,,15
+rule_24h,29,Рыбка & Икорка,4,0,0,False,0,,16
+rule_24h,30,Bolender Meat Company,3,0,0,False,0,,2
+rule_24h,30,METRO,3,0,0,False,0,,3
+rule_24h,30,Ароматный мир,3,0,0,False,0,,4
+rule_24h,30,Белорусские продукты,3,0,0,False,0,,5
+rule_24h,30,Бристоль,3,0,0,False,0,,6
+rule_24h,30,ВкусВилл,3,0,0,False,0,,7
+rule_24h,30,Дары природы,3,0,0,False,0,,8
+rule_24h,30,Дикси,3,0,0,False,0,,9
+rule_24h,30,Ермолино,3,0,0,False,0,,10
+rule_24h,30,Колхоз,3,1,33,False,65.9,,1
+rule_24h,30,Кулинария Кио,3,0,0,False,0,,11
+rule_24h,30,Магнит,3,0,0,False,0,,12
+rule_24h,30,Перекрёсток,3,0,0,False,0,,13
+rule_24h,30,Продстар,3,0,0,False,0,,14
+rule_24h,30,Пятёрочка,3,0,0,False,0,,15
+rule_24h,30,Рыбка & Икорка,3,0,0,False,0,,16

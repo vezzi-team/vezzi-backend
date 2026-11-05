@@ -1,0 +1,4486 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Vezzi API",
+    "description": "\nBackend приложения **«Умная корзина»** (Vezzi): корзины, сравнение цен\nв магазинах, пешеходный маршрут и сохранённые планы покупки.\n\n**Как авторизоваться в Swagger**\n1. Вызовите `POST /api/v1/auth/register` или `POST /api/v1/auth/login`.\n2. Скопируйте `tokens.access_token` из ответа.\n3. Нажмите **Authorize** справа вверху и вставьте токен.\n\n**Общие правила**\n- Деньги в целых копейках (`8999` = 89,99 ₽), время в секундах, расстояния в метрах.\n- Время в ответах: UTC без долей секунды, `2026-11-02T09:30:00Z` (подходит для `.iso8601` в Swift).\n- Любая ошибка приходит в формате `{\"code\", \"message\", \"request_id\", \"details\"}`.\n",
+    "version": "0.2.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Служебное"
+        ],
+        "summary": "Health",
+        "description": "Процесс жив. Используется Docker и мониторингом.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "tags": [
+          "Служебное"
+        ],
+        "summary": "Version",
+        "description": "Какая сборка сейчас работает: версия и коммит.",
+        "operationId": "version",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Version"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": [
+          "Служебное"
+        ],
+        "summary": "Ready",
+        "description": "Сервис готов принимать запросы: база данных отвечает.",
+        "operationId": "ready",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "503": {
+            "description": "База данных недоступна"
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Register",
+        "description": "Регистрация по email и паролю. Сразу возвращает токены, отдельно входить не нужно.",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Credentials"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Login",
+        "description": "Вход по email и паролю. Каждый вход создаёт отдельную сессию устройства.",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Refresh",
+        "description": "Новая пара токенов в обмен на refresh-токен.\n\nRefresh-токен одноразовый: после обмена старый перестаёт работать.\nПовторное использование старого токена завершает сессию устройства.\nКлиент не должен отправлять два обновления одновременно.",
+        "operationId": "refresh",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "Авторизация"
+        ],
+        "summary": "Logout",
+        "description": "Выход на этом устройстве: refresh-токен отзывается. Повторный вызов безопасен.",
+        "operationId": "logout",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/me": {
+      "get": {
+        "tags": [
+          "Аккаунт"
+        ],
+        "summary": "Get Me",
+        "description": "Данные текущего пользователя.",
+        "operationId": "get_me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Аккаунт"
+        ],
+        "summary": "Delete Me",
+        "description": "Удаление аккаунта вместе с корзинами и планами (требование App Store 5.1.1(v)).\n\nДействие необратимо. Подтверждение у пользователя запрашивает приложение.",
+        "operationId": "delete_me",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users/me/password": {
+      "post": {
+        "tags": [
+          "Аккаунт"
+        ],
+        "summary": "Change Password",
+        "description": "Смена пароля. Все остальные устройства выходят из аккаунта, это получает новые токены.",
+        "operationId": "change_password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenPair"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/catalog": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "Get Catalog Status",
+        "description": "Какой каталог сейчас загружен. Если is_synthetic = true, цены демонстрационные.",
+        "operationId": "get_catalog_status",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogStatus"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/catalog/export": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "Export Catalog",
+        "description": "Весь активный каталог для локального кэша приложения: товары, магазины и цены.\n\nСнимок каталога после публикации не меняется, поэтому его номер служит меткой ETag.\nКлиент присылает её в If-None-Match и, если каталог прежний, получает пустой ответ 304.",
+        "operationId": "export_catalog",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "if-none-match",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "If-None-Match"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogExport"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "304": {
+            "description": "Каталог не менялся"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/search": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "Search Products",
+        "description": "Поиск товара по названию, не больше 10 вариантов (F02).\n\nПустой список означает, что ничего не найдено.",
+        "operationId": "search_products",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "Текст запроса",
+              "title": "Q"
+            },
+            "description": "Текст запроса"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 10,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductRead"
+                  },
+                  "title": "Response Search Products"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{product_id}": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "Get Product",
+        "description": "Карточка товара и цены во всех магазинах с отметкой свежести (F04).",
+        "operationId": "get_product",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/stores": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "List Stores",
+        "description": "Магазины пилота. Если передать координаты, ближайшие будут первыми.",
+        "operationId": "list_stores",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 90,
+                  "minimum": -90
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Latitude"
+            }
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 180,
+                  "minimum": -180
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Longitude"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StoreWithDistance"
+                  },
+                  "title": "Response List Stores"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carts": {
+      "get": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "List Carts",
+        "description": "Корзины пользователя, недавно изменённые первыми.",
+        "operationId": "list_carts",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/CartStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Только корзины с этим статусом",
+              "title": "Status"
+            },
+            "description": "Только корзины с этим статусом"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CartSummary"
+                  },
+                  "title": "Response List Carts"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Create Cart",
+        "description": "Создать пустую корзину со статусом active.",
+        "operationId": "create_cart",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
+    "/api/v1/carts/{cart_id}": {
+      "get": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Get Cart",
+        "description": "Корзина с товарами. Чужая корзина недоступна: ответ 404.",
+        "operationId": "get_cart",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cart Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Update Cart",
+        "description": "Переименовать корзину или сменить её статус.",
+        "operationId": "update_cart",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cart Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CartUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Delete Cart",
+        "description": "Удалить корзину вместе с позициями. Её планы остаются в истории.",
+        "operationId": "delete_cart",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cart Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carts/{cart_id}/items": {
+      "post": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Add Cart Item",
+        "description": "Добавить товар. Если он уже в корзине, количество суммируется (не больше 99).\n\nВ корзине может быть до 30 разных товаров (F03).",
+        "operationId": "add_cart_item",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cart Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemAdd"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
+    "/api/v1/carts/{cart_id}/items/{product_id}": {
+      "patch": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Update Cart Item",
+        "description": "Задать новое количество товара (от 1 до 99).",
+        "operationId": "update_cart_item",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cart Id"
+            }
+          },
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ItemUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Remove Cart Item",
+        "description": "Убрать товар из корзины.",
+        "operationId": "remove_cart_item",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cart Id"
+            }
+          },
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/carts/{cart_id}/plans": {
+      "post": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Calculate Plans",
+        "description": "Рассчитать до трёх планов покупки корзины с пешим маршрутом (F05–F11).\n\nУчитываются только свежие цены на товары в наличии. Планы отсортированы\nпо цене, затем по общему времени и числу магазинов. Каждый план сохраняется\nсо статусом planned: чтобы пойти по нему, вызовите `POST /plans/{plan_id}/start`.\nНовый расчёт заменяет невыбранные планы прошлого расчёта.\nЕсли план составить нельзя, приходит status = no_plans и объяснение в поле problem.",
+        "operationId": "calculate_plans",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cart Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/carts/{cart_id}/chain-totals": {
+      "get": {
+        "tags": [
+          "Корзины"
+        ],
+        "summary": "Compare Chains",
+        "description": "Сколько стоит вся корзина в каждой сети: цена × количество по строкам и итог.\n\nЦена товара в сети: самая низкая свежая цена в наличии среди её магазинов.\nИтог есть только у сетей, где продаются все товары корзины. Всё в копейках, без округления.",
+        "operationId": "compare_chains",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Cart Id"
+            }
+          },
+          {
+            "name": "chain",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "maxItems": 20
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Только эти сети, можно повторять: ?chain=A&chain=B",
+              "title": "Chain"
+            },
+            "description": "Только эти сети, можно повторять: ?chain=A&chain=B"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChainComparison"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/plans": {
+      "get": {
+        "tags": [
+          "Планы покупки"
+        ],
+        "summary": "List Plans",
+        "description": "История планов пользователя, новые первыми (не больше 100).",
+        "operationId": "list_plans",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/PlanStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Только планы с этим статусом",
+              "title": "Status"
+            },
+            "description": "Только планы с этим статусом"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlanSummary"
+                  },
+                  "title": "Response List Plans"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}": {
+      "get": {
+        "tags": [
+          "Планы покупки"
+        ],
+        "summary": "Get Plan",
+        "description": "План целиком: магазины по порядку, позиции с отметками и линия маршрута.",
+        "operationId": "get_plan",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Планы покупки"
+        ],
+        "summary": "Delete Plan",
+        "description": "Удалить план из истории.",
+        "operationId": "delete_plan",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/start": {
+      "post": {
+        "tags": [
+          "Планы покупки"
+        ],
+        "summary": "Start Plan",
+        "description": "Выбрать план и начать покупки: статус planned → active.\n\nОстальные варианты этого расчёта удаляются. Нельзя начать план, если цены\nв нём старше допустимого возраста или по корзине уже идёт другой план.",
+        "operationId": "start_plan",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/items/{item_id}": {
+      "patch": {
+        "tags": [
+          "Планы покупки"
+        ],
+        "summary": "Update Plan Item",
+        "description": "Отметить позицию в магазине: bought (куплено) или missing (нет на полке).\n\nДля missing в позиции уже указан запасной магазин этого маршрута, если он есть.",
+        "operationId": "update_plan_item",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanItemUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          }
+        }
+      }
+    },
+    "/api/v1/plans/{plan_id}/complete": {
+      "post": {
+        "tags": [
+          "Планы покупки"
+        ],
+        "summary": "Complete Plan",
+        "description": "Закончить покупки: план и его корзина получают статус completed.",
+        "operationId": "complete_plan",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/catalog/imports": {
+      "get": {
+        "tags": [
+          "Администрирование"
+        ],
+        "summary": "List Imports",
+        "description": "История загрузок каталога, последние первыми.",
+        "operationId": "list_imports",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CatalogImportRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Imports"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Администрирование"
+        ],
+        "summary": "Import Catalog",
+        "description": "Загрузить новый каталог и атомарно сделать его активным (D02, N04).\n\nНекорректные строки отклоняются с указанием причины. Повторная загрузка того же\nфайла ничего не меняет и возвращает status = unchanged.",
+        "operationId": "import_catalog",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_catalog"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportReportRead"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthResponse": {
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserRead"
+          },
+          "tokens": {
+            "$ref": "#/components/schemas/TokenPair"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user",
+          "tokens"
+        ],
+        "title": "AuthResponse"
+      },
+      "Baseline": {
+        "properties": {
+          "store": {
+            "$ref": "#/components/schemas/StoreRead"
+          },
+          "total_kopecks": {
+            "type": "integer",
+            "title": "Total Kopecks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "store",
+          "total_kopecks"
+        ],
+        "title": "Baseline"
+      },
+      "Body_import_catalog": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "Excel-файл каталога (.xlsx)"
+          },
+          "shift_timestamps": {
+            "type": "boolean",
+            "title": "Shift Timestamps",
+            "description": "Сдвинуть время цен к текущему (только для синтетических данных)",
+            "default": false
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic",
+            "description": "Пометить данные как демонстрационные",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_import_catalog"
+      },
+      "CartCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name",
+            "examples": [
+              "На неделю"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CartCreate"
+      },
+      "CartItemRead": {
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/ProductRead"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "added_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Added At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "product",
+          "quantity",
+          "added_at"
+        ],
+        "title": "CartItemRead"
+      },
+      "CartRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CartStatus"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CartItemRead"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "status",
+          "items",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CartRead"
+      },
+      "CartStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "saved",
+          "completed"
+        ],
+        "title": "CartStatus"
+      },
+      "CartSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CartStatus"
+          },
+          "items_count": {
+            "type": "integer",
+            "title": "Items Count"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "status",
+          "items_count",
+          "updated_at"
+        ],
+        "title": "CartSummary"
+      },
+      "CartUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CartStatus"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "active: собираю сейчас, saved: отложена на потом, completed: всё куплено"
+          }
+        },
+        "type": "object",
+        "title": "CartUpdate"
+      },
+      "CatalogExport": {
+        "properties": {
+          "import_id": {
+            "type": "integer",
+            "title": "Import Id"
+          },
+          "imported_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Imported At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "offer_max_age_hours": {
+            "type": "integer",
+            "title": "Offer Max Age Hours",
+            "description": "Цена старше этого возраста в расчёт не идёт. Клиент сравнивает сам"
+          },
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/ProductRead"
+            },
+            "type": "array",
+            "title": "Products"
+          },
+          "stores": {
+            "items": {
+              "$ref": "#/components/schemas/StoreRead"
+            },
+            "type": "array",
+            "title": "Stores"
+          },
+          "offers": {
+            "items": {
+              "$ref": "#/components/schemas/ExportedOffer"
+            },
+            "type": "array",
+            "title": "Offers",
+            "description": "Все цены снимка, в том числе устаревшие и без наличия"
+          }
+        },
+        "type": "object",
+        "required": [
+          "import_id",
+          "imported_at",
+          "is_synthetic",
+          "offer_max_age_hours",
+          "products",
+          "stores",
+          "offers"
+        ],
+        "title": "CatalogExport",
+        "description": "Весь активный каталог для локального кэша iOS-приложения."
+      },
+      "CatalogImportRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "source_name": {
+            "type": "string",
+            "title": "Source Name"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "timestamps_shifted": {
+            "type": "boolean",
+            "title": "Timestamps Shifted"
+          },
+          "stores_count": {
+            "type": "integer",
+            "title": "Stores Count"
+          },
+          "products_count": {
+            "type": "integer",
+            "title": "Products Count"
+          },
+          "offers_count": {
+            "type": "integer",
+            "title": "Offers Count"
+          },
+          "rejected_rows_count": {
+            "type": "integer",
+            "title": "Rejected Rows Count"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "source_name",
+          "is_synthetic",
+          "timestamps_shifted",
+          "stores_count",
+          "products_count",
+          "offers_count",
+          "rejected_rows_count",
+          "created_at"
+        ],
+        "title": "CatalogImportRead"
+      },
+      "CatalogStatus": {
+        "properties": {
+          "is_loaded": {
+            "type": "boolean",
+            "title": "Is Loaded"
+          },
+          "import_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Import Id"
+          },
+          "imported_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "examples": [
+                  "2026-11-02T09:30:00Z"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imported At"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic",
+            "description": "Данные демонстрационные: приложение должно это показать",
+            "default": false
+          },
+          "stores_count": {
+            "type": "integer",
+            "title": "Stores Count",
+            "default": 0
+          },
+          "products_count": {
+            "type": "integer",
+            "title": "Products Count",
+            "default": 0
+          },
+          "offers_count": {
+            "type": "integer",
+            "title": "Offers Count",
+            "default": 0
+          },
+          "fresh_offers_count": {
+            "type": "integer",
+            "title": "Fresh Offers Count",
+            "description": "Сколько цен сейчас свежие и в наличии, то есть участвуют в расчёте",
+            "default": 0
+          },
+          "offer_max_age_hours": {
+            "type": "integer",
+            "title": "Offer Max Age Hours"
+          }
+        },
+        "type": "object",
+        "required": [
+          "is_loaded",
+          "offer_max_age_hours"
+        ],
+        "title": "CatalogStatus"
+      },
+      "ChainComparison": {
+        "properties": {
+          "chains": {
+            "items": {
+              "$ref": "#/components/schemas/ChainTotalRead"
+            },
+            "type": "array",
+            "title": "Chains",
+            "description": "Сначала полные корзины от дешёвой к дорогой, потом неполные по числу пропусков"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Calculated At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          },
+          "offer_max_age_hours": {
+            "type": "integer",
+            "title": "Offer Max Age Hours"
+          },
+          "data_is_synthetic": {
+            "type": "boolean",
+            "title": "Data Is Synthetic"
+          }
+        },
+        "type": "object",
+        "required": [
+          "chains",
+          "calculated_at",
+          "offer_max_age_hours",
+          "data_is_synthetic"
+        ],
+        "title": "ChainComparison"
+      },
+      "ChainLineRead": {
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/ProductRead"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "status": {
+            "$ref": "#/components/schemas/LineStatus",
+            "description": "available: цена подтверждена и входит в суммы. Остальные значения означают пропуск: stale (цена устарела), out_of_stock (нет в наличии), stock_unknown (наличие неизвестно), not_sold (сеть не продаёт товар)"
+          },
+          "unit_price_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit Price Kopecks",
+            "description": "Обычная цена упаковки. У пропусков это последняя известная цена"
+          },
+          "total_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Kopecks",
+            "description": "Цена × количество. Есть только у строк со статусом available"
+          },
+          "card_price_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Price Kopecks",
+            "description": "Цена по карте лояльности. Показывается отдельно и в суммы не входит (F06)"
+          },
+          "price_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Type",
+            "examples": [
+              "current",
+              "promo"
+            ]
+          },
+          "price_conditions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Conditions",
+            "description": "Условия акции"
+          },
+          "store": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StoreRead"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Магазин сети, где наблюдалась эта цена"
+          },
+          "price_updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "examples": [
+                  "2026-11-02T09:30:00Z"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Updated At",
+            "description": "Когда источник видел эту цену"
+          },
+          "is_fresh": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Fresh",
+            "description": "false: цена старше допустимого возраста"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product",
+          "quantity",
+          "status",
+          "unit_price_kopecks",
+          "total_kopecks",
+          "card_price_kopecks",
+          "price_type",
+          "price_conditions",
+          "store",
+          "price_updated_at",
+          "is_fresh"
+        ],
+        "title": "ChainLineRead"
+      },
+      "ChainTotalRead": {
+        "properties": {
+          "chain": {
+            "type": "string",
+            "title": "Chain",
+            "examples": [
+              "Пятёрочка"
+            ]
+          },
+          "is_complete": {
+            "type": "boolean",
+            "title": "Is Complete",
+            "description": "В сети подтверждены все товары корзины"
+          },
+          "total_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Kopecks",
+            "description": "Итог по сети. null, если корзина неполная: сравнивать его с полной нельзя"
+          },
+          "found_total_kopecks": {
+            "type": "integer",
+            "title": "Found Total Kopecks",
+            "description": "Сумма только по найденным товарам"
+          },
+          "items_count": {
+            "type": "integer",
+            "title": "Items Count"
+          },
+          "found_items_count": {
+            "type": "integer",
+            "title": "Found Items Count"
+          },
+          "coverage_percent": {
+            "type": "integer",
+            "title": "Coverage Percent",
+            "description": "Доля найденных позиций, округлена вниз: 100 только у полной корзины"
+          },
+          "missing_products": {
+            "items": {
+              "$ref": "#/components/schemas/ProductRead"
+            },
+            "type": "array",
+            "title": "Missing Products",
+            "description": "Пропуски, причина в строке"
+          },
+          "oldest_price_updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "examples": [
+                  "2026-11-02T09:30:00Z"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oldest Price Updated At",
+            "description": "Самая старая цена в суммах: насколько актуален итог"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/ChainLineRead"
+            },
+            "type": "array",
+            "title": "Lines",
+            "description": "Строки в порядке корзины"
+          }
+        },
+        "type": "object",
+        "required": [
+          "chain",
+          "is_complete",
+          "total_kopecks",
+          "found_total_kopecks",
+          "items_count",
+          "found_items_count",
+          "coverage_percent",
+          "missing_products",
+          "oldest_price_updated_at",
+          "lines"
+        ],
+        "title": "ChainTotalRead"
+      },
+      "ChangePasswordRequest": {
+        "properties": {
+          "current_password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Current Password"
+          },
+          "new_password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "New Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "current_password",
+          "new_password"
+        ],
+        "title": "ChangePasswordRequest"
+      },
+      "Coordinates": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "examples": [
+              60.0087
+            ]
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "examples": [
+              30.2582
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "title": "Coordinates"
+      },
+      "Credentials": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "examples": [
+              "student@itmo.ru"
+            ]
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 8,
+            "title": "Password",
+            "examples": [
+              "correct-horse-42"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "Credentials"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Машиночитаемый код ошибки",
+            "examples": [
+              "not_found"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Текст для пользователя",
+            "examples": [
+              "Корзина не найдена"
+            ]
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id",
+            "description": "Идентификатор запроса, по нему ищем запись в логах"
+          },
+          "details": {
+            "title": "Details",
+            "description": "Подробности, например ошибки по полям"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorResponse"
+      },
+      "ExportedOffer": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Постоянный номер: магазин-товар. Новая загрузка обновляет ту же запись",
+            "examples": [
+              "7-42"
+            ]
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "store_id": {
+            "type": "integer",
+            "title": "Store Id"
+          },
+          "price_kopecks": {
+            "type": "integer",
+            "title": "Price Kopecks"
+          },
+          "currency": {
+            "type": "string",
+            "const": "RUB",
+            "title": "Currency",
+            "default": "RUB"
+          },
+          "card_price_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Price Kopecks"
+          },
+          "in_stock": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "In Stock"
+          },
+          "price_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Type"
+          },
+          "price_conditions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Conditions"
+          },
+          "source_product_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Product Id"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "source_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Source Updated At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "product_id",
+          "store_id",
+          "price_kopecks",
+          "card_price_kopecks",
+          "in_stock",
+          "price_type",
+          "price_conditions",
+          "source_product_id",
+          "source_url",
+          "source_updated_at"
+        ],
+        "title": "ExportedOffer"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImportReportRead": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "published",
+              "unchanged"
+            ],
+            "title": "Status"
+          },
+          "import_id": {
+            "type": "integer",
+            "title": "Import Id"
+          },
+          "stores_count": {
+            "type": "integer",
+            "title": "Stores Count"
+          },
+          "products_count": {
+            "type": "integer",
+            "title": "Products Count"
+          },
+          "offers_count": {
+            "type": "integer",
+            "title": "Offers Count"
+          },
+          "rejected_rows_count": {
+            "type": "integer",
+            "title": "Rejected Rows Count"
+          },
+          "is_synthetic": {
+            "type": "boolean",
+            "title": "Is Synthetic"
+          },
+          "timestamps_shifted": {
+            "type": "boolean",
+            "title": "Timestamps Shifted"
+          },
+          "skipped_weighted_products": {
+            "type": "integer",
+            "title": "Skipped Weighted Products",
+            "description": "Весовые товары пропущены: в MVP они не загружаются"
+          },
+          "skipped_weighted_offers": {
+            "type": "integer",
+            "title": "Skipped Weighted Offers",
+            "description": "Цены пропущенных весовых товаров"
+          },
+          "fresh_offers_count": {
+            "type": "integer",
+            "title": "Fresh Offers Count",
+            "description": "Сколько цен участвует в расчёте прямо сейчас. Если мало, данные устарели"
+          },
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/ImportRowError"
+            },
+            "type": "array",
+            "title": "Errors"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "import_id",
+          "stores_count",
+          "products_count",
+          "offers_count",
+          "rejected_rows_count",
+          "is_synthetic",
+          "timestamps_shifted",
+          "skipped_weighted_products",
+          "skipped_weighted_offers",
+          "fresh_offers_count",
+          "errors"
+        ],
+        "title": "ImportReportRead"
+      },
+      "ImportRowError": {
+        "properties": {
+          "sheet": {
+            "type": "string",
+            "title": "Sheet"
+          },
+          "row": {
+            "type": "integer",
+            "title": "Row"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sheet",
+          "row",
+          "message"
+        ],
+        "title": "ImportRowError"
+      },
+      "ItemAdd": {
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "quantity": {
+            "type": "integer",
+            "maximum": 99.0,
+            "minimum": 1.0,
+            "title": "Quantity",
+            "default": 1
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id"
+        ],
+        "title": "ItemAdd"
+      },
+      "ItemUpdate": {
+        "properties": {
+          "quantity": {
+            "type": "integer",
+            "maximum": 99.0,
+            "minimum": 1.0,
+            "title": "Quantity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "quantity"
+        ],
+        "title": "ItemUpdate"
+      },
+      "LineStatus": {
+        "type": "string",
+        "enum": [
+          "available",
+          "stale",
+          "out_of_stock",
+          "stock_unknown",
+          "not_sold"
+        ],
+        "title": "LineStatus"
+      },
+      "LoginRequest": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email",
+            "examples": [
+              "student@itmo.ru"
+            ]
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Password",
+            "examples": [
+              "correct-horse-42"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequest"
+      },
+      "OfferRead": {
+        "properties": {
+          "store": {
+            "$ref": "#/components/schemas/StoreRead"
+          },
+          "price_kopecks": {
+            "type": "integer",
+            "title": "Price Kopecks",
+            "description": "Обычная цена, она идёт в расчёт",
+            "examples": [
+              8999
+            ]
+          },
+          "card_price_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Price Kopecks",
+            "description": "Цена по карте лояльности. В итоги не входит (F06)"
+          },
+          "in_stock": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "In Stock",
+            "description": "null: наличие неизвестно"
+          },
+          "price_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Type",
+            "examples": [
+              "current",
+              "promo"
+            ]
+          },
+          "price_conditions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Conditions",
+            "description": "Условия акции"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url",
+            "description": "Страница товара у источника цены"
+          },
+          "source_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Source Updated At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          },
+          "is_fresh": {
+            "type": "boolean",
+            "title": "Is Fresh",
+            "description": "Цена не старше допустимого возраста и участвует в расчёте"
+          }
+        },
+        "type": "object",
+        "required": [
+          "store",
+          "price_kopecks",
+          "card_price_kopecks",
+          "in_stock",
+          "price_type",
+          "price_conditions",
+          "source_url",
+          "source_updated_at",
+          "is_fresh"
+        ],
+        "title": "OfferRead"
+      },
+      "PackageUnit": {
+        "type": "string",
+        "enum": [
+          "g",
+          "ml",
+          "pcs",
+          "m"
+        ],
+        "title": "PackageUnit"
+      },
+      "PlanItemRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "product": {
+            "$ref": "#/components/schemas/ProductRead"
+          },
+          "quantity": {
+            "type": "integer",
+            "title": "Quantity"
+          },
+          "unit_price_kopecks": {
+            "type": "integer",
+            "title": "Unit Price Kopecks"
+          },
+          "total_kopecks": {
+            "type": "integer",
+            "title": "Total Kopecks"
+          },
+          "card_price_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Price Kopecks",
+            "description": "Цена по карте. В итог плана не входит"
+          },
+          "price_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Type"
+          },
+          "price_conditions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Conditions"
+          },
+          "price_updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Price Updated At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanItemStatus",
+            "description": "planned: ещё не куплен, bought: куплен, missing: не оказалось в магазине"
+          },
+          "alternative_store_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alternative Store Id",
+            "description": "Другой магазин этого маршрута, где товар тоже есть (на случай missing)"
+          },
+          "alternative_price_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alternative Price Kopecks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "product",
+          "quantity",
+          "unit_price_kopecks",
+          "total_kopecks",
+          "card_price_kopecks",
+          "price_type",
+          "price_conditions",
+          "price_updated_at",
+          "status",
+          "alternative_store_id",
+          "alternative_price_kopecks"
+        ],
+        "title": "PlanItemRead"
+      },
+      "PlanItemStatus": {
+        "type": "string",
+        "enum": [
+          "planned",
+          "bought",
+          "missing"
+        ],
+        "title": "PlanItemStatus"
+      },
+      "PlanItemUpdate": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/PlanItemStatus"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "PlanItemUpdate"
+      },
+      "PlanProblem": {
+        "properties": {
+          "reason": {
+            "$ref": "#/components/schemas/PlanningProblem"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "unavailable_products": {
+            "items": {
+              "$ref": "#/components/schemas/ProductRead"
+            },
+            "type": "array",
+            "title": "Unavailable Products"
+          },
+          "min_required_stores": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Required Stores"
+          },
+          "min_required_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Required Minutes"
+          },
+          "min_required_radius_meters": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Required Radius Meters",
+            "description": "Для radius_too_small: при каком радиусе продаются все товары"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reason",
+          "message"
+        ],
+        "title": "PlanProblem"
+      },
+      "PlanRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "cart_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cart Id",
+            "description": "null, если корзину уже удалили"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus",
+            "description": "planned: рассчитан, active: идут покупки, completed: завершён"
+          },
+          "rank": {
+            "type": "integer",
+            "title": "Rank",
+            "description": "Место среди вариантов расчёта, 1 = лучший"
+          },
+          "total_kopecks": {
+            "type": "integer",
+            "title": "Total Kopecks"
+          },
+          "savings_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Savings Kopecks",
+            "description": "Экономия к лучшему плану в одном магазине; null, если сравнивать не с чем"
+          },
+          "stores_count": {
+            "type": "integer",
+            "title": "Stores Count"
+          },
+          "walking_seconds": {
+            "type": "integer",
+            "title": "Walking Seconds"
+          },
+          "walking_meters": {
+            "type": "integer",
+            "title": "Walking Meters"
+          },
+          "shopping_seconds": {
+            "type": "integer",
+            "title": "Shopping Seconds"
+          },
+          "total_seconds": {
+            "type": "integer",
+            "title": "Total Seconds"
+          },
+          "stops": {
+            "items": {
+              "$ref": "#/components/schemas/PlanStopRead"
+            },
+            "type": "array",
+            "title": "Stops"
+          },
+          "route": {
+            "$ref": "#/components/schemas/RouteGeometry"
+          },
+          "data_is_synthetic": {
+            "type": "boolean",
+            "title": "Data Is Synthetic"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "examples": [
+                  "2026-11-02T09:30:00Z"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "examples": [
+                  "2026-11-02T09:30:00Z"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cart_id",
+          "status",
+          "rank",
+          "total_kopecks",
+          "savings_kopecks",
+          "stores_count",
+          "walking_seconds",
+          "walking_meters",
+          "shopping_seconds",
+          "total_seconds",
+          "stops",
+          "route",
+          "data_is_synthetic",
+          "created_at",
+          "started_at",
+          "completed_at"
+        ],
+        "title": "PlanRead"
+      },
+      "PlanRequest": {
+        "properties": {
+          "start": {
+            "$ref": "#/components/schemas/Coordinates",
+            "description": "Откуда пользователь начинает маршрут"
+          },
+          "max_stores": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Max Stores",
+            "description": "Сколько магазинов готов обойти",
+            "default": 3
+          },
+          "max_total_minutes": {
+            "type": "integer",
+            "maximum": 180.0,
+            "minimum": 10.0,
+            "title": "Max Total Minutes",
+            "description": "Лимит общего времени: дорога и покупки",
+            "default": 60
+          },
+          "substitutions": {
+            "items": {
+              "$ref": "#/components/schemas/Substitution"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Substitutions"
+          },
+          "store_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array",
+                "maxItems": 15,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Store Ids",
+            "description": "Рассматривать только эти магазины. Если не задано, берём ближайшие"
+          },
+          "radius_meters": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 5000.0,
+                "minimum": 100.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radius Meters",
+            "description": "Радиус круга на карте вокруг старта: магазины дальше этого расстояния по прямой не рассматриваются. Если не задан, ограничения нет"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start"
+        ],
+        "title": "PlanRequest"
+      },
+      "PlanResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "no_plans"
+            ],
+            "title": "Status"
+          },
+          "plans": {
+            "items": {
+              "$ref": "#/components/schemas/PlanRead"
+            },
+            "type": "array",
+            "title": "Plans",
+            "description": "До трёх полных планов, лучший первым"
+          },
+          "baseline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Baseline"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Самый дешёвый допустимый план в одном магазине"
+          },
+          "problem": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanProblem"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Почему не удалось составить план"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Calculated At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          },
+          "offer_max_age_hours": {
+            "type": "integer",
+            "title": "Offer Max Age Hours"
+          },
+          "data_is_synthetic": {
+            "type": "boolean",
+            "title": "Data Is Synthetic"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "plans",
+          "baseline",
+          "problem",
+          "calculated_at",
+          "offer_max_age_hours",
+          "data_is_synthetic"
+        ],
+        "title": "PlanResponse"
+      },
+      "PlanStatus": {
+        "type": "string",
+        "enum": [
+          "planned",
+          "active",
+          "completed"
+        ],
+        "title": "PlanStatus"
+      },
+      "PlanStopRead": {
+        "properties": {
+          "position": {
+            "type": "integer",
+            "title": "Position",
+            "description": "Номер магазина в маршруте, начиная с 1"
+          },
+          "store": {
+            "$ref": "#/components/schemas/StoreRead"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlanItemRead"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "subtotal_kopecks": {
+            "type": "integer",
+            "title": "Subtotal Kopecks"
+          },
+          "shopping_seconds": {
+            "type": "integer",
+            "title": "Shopping Seconds"
+          },
+          "walk_from_previous_seconds": {
+            "type": "integer",
+            "title": "Walk From Previous Seconds",
+            "description": "Путь от старта или предыдущего магазина"
+          },
+          "walk_from_previous_meters": {
+            "type": "integer",
+            "title": "Walk From Previous Meters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "position",
+          "store",
+          "items",
+          "subtotal_kopecks",
+          "shopping_seconds",
+          "walk_from_previous_seconds",
+          "walk_from_previous_meters"
+        ],
+        "title": "PlanStopRead"
+      },
+      "PlanSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "cart_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cart Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus"
+          },
+          "total_kopecks": {
+            "type": "integer",
+            "title": "Total Kopecks"
+          },
+          "savings_kopecks": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Savings Kopecks"
+          },
+          "stores_count": {
+            "type": "integer",
+            "title": "Stores Count"
+          },
+          "total_seconds": {
+            "type": "integer",
+            "title": "Total Seconds"
+          },
+          "items_count": {
+            "type": "integer",
+            "title": "Items Count"
+          },
+          "bought_count": {
+            "type": "integer",
+            "title": "Bought Count"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "examples": [
+                  "2026-11-02T09:30:00Z"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time",
+                "examples": [
+                  "2026-11-02T09:30:00Z"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cart_id",
+          "status",
+          "total_kopecks",
+          "savings_kopecks",
+          "stores_count",
+          "total_seconds",
+          "items_count",
+          "bought_count",
+          "created_at",
+          "started_at",
+          "completed_at"
+        ],
+        "title": "PlanSummary",
+        "description": "Строка истории планов, без маршрута и позиций."
+      },
+      "PlanningProblem": {
+        "type": "string",
+        "enum": [
+          "items_unavailable",
+          "store_limit_too_low",
+          "time_limit_too_low",
+          "route_unavailable",
+          "radius_too_small"
+        ],
+        "title": "PlanningProblem"
+      },
+      "ProductDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "examples": [
+              "Простоквашино Молоко 2,5%, 930 мл"
+            ]
+          },
+          "brand": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "product_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Type"
+          },
+          "package_amount": {
+            "type": "number",
+            "title": "Package Amount",
+            "description": "Фасовка в базовых единицах",
+            "examples": [
+              930
+            ]
+          },
+          "package_unit": {
+            "$ref": "#/components/schemas/PackageUnit",
+            "description": "g: граммы, ml: миллилитры, pcs: штуки, m: метры"
+          },
+          "attributes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Attributes"
+          },
+          "offers": {
+            "items": {
+              "$ref": "#/components/schemas/OfferRead"
+            },
+            "type": "array",
+            "title": "Offers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "brand",
+          "category",
+          "product_type",
+          "package_amount",
+          "package_unit",
+          "attributes",
+          "offers"
+        ],
+        "title": "ProductDetail"
+      },
+      "ProductRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "examples": [
+              "Простоквашино Молоко 2,5%, 930 мл"
+            ]
+          },
+          "brand": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "product_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Type"
+          },
+          "package_amount": {
+            "type": "number",
+            "title": "Package Amount",
+            "description": "Фасовка в базовых единицах",
+            "examples": [
+              930
+            ]
+          },
+          "package_unit": {
+            "$ref": "#/components/schemas/PackageUnit",
+            "description": "g: граммы, ml: миллилитры, pcs: штуки, m: метры"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "brand",
+          "category",
+          "product_type",
+          "package_amount",
+          "package_unit"
+        ],
+        "title": "ProductRead"
+      },
+      "RefreshRequest": {
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Refresh Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "refresh_token"
+        ],
+        "title": "RefreshRequest"
+      },
+      "RouteGeometry": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "examples": [
+              "osrm"
+            ]
+          },
+          "uses_road_network": {
+            "type": "boolean",
+            "title": "Uses Road Network",
+            "description": "false: линия построена по прямой (тестовый режим), это не настоящий маршрут"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/Coordinates"
+            },
+            "type": "array",
+            "title": "Points",
+            "description": "Линия маршрута от старта до последнего магазина"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "uses_road_network",
+          "points"
+        ],
+        "title": "RouteGeometry"
+      },
+      "StoreFormat": {
+        "type": "string",
+        "enum": [
+          "convenience",
+          "supermarket",
+          "hypermarket"
+        ],
+        "title": "StoreFormat"
+      },
+      "StoreRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "chain": {
+            "type": "string",
+            "title": "Chain"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "format": {
+            "$ref": "#/components/schemas/StoreFormat"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "chain",
+          "name",
+          "address",
+          "latitude",
+          "longitude",
+          "format"
+        ],
+        "title": "StoreRead"
+      },
+      "StoreWithDistance": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "chain": {
+            "type": "string",
+            "title": "Chain"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "latitude": {
+            "type": "number",
+            "title": "Latitude"
+          },
+          "longitude": {
+            "type": "number",
+            "title": "Longitude"
+          },
+          "format": {
+            "$ref": "#/components/schemas/StoreFormat"
+          },
+          "distance_meters": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Meters",
+            "description": "Расстояние по прямой до переданной точки"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "chain",
+          "name",
+          "address",
+          "latitude",
+          "longitude",
+          "format"
+        ],
+        "title": "StoreWithDistance"
+      },
+      "Substitution": {
+        "properties": {
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id",
+            "description": "Товар из корзины"
+          },
+          "replacement_product_id": {
+            "type": "integer",
+            "title": "Replacement Product Id",
+            "description": "Аналог, которым его заменяем"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "replacement_product_id"
+        ],
+        "title": "Substitution",
+        "description": "Замена, которую пользователь явно подтвердил (F10)."
+      },
+      "TokenPair": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token",
+            "description": "JWT для заголовка Authorization: Bearer <token>"
+          },
+          "refresh_token": {
+            "type": "string",
+            "title": "Refresh Token",
+            "description": "Одноразовый токен для POST /auth/refresh"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In",
+            "description": "Через сколько секунд истечёт access_token",
+            "examples": [
+              1800
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "refresh_token",
+          "expires_in"
+        ],
+        "title": "TokenPair"
+      },
+      "UserRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "Email"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "examples": [
+              "2026-11-02T09:30:00Z"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email",
+          "role",
+          "created_at"
+        ],
+        "title": "UserRead"
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "user",
+          "admin"
+        ],
+        "title": "UserRole"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "description": "Access-токен из /auth/login",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Авторизация",
+      "description": "Регистрация, вход и обновление токенов"
+    },
+    {
+      "name": "Аккаунт",
+      "description": "Текущий пользователь, смена пароля, удаление аккаунта"
+    },
+    {
+      "name": "Каталог",
+      "description": "Товары, цены и магазины пилота"
+    },
+    {
+      "name": "Корзины",
+      "description": "Корзины пользователя и расчёт планов покупки"
+    },
+    {
+      "name": "Планы покупки",
+      "description": "Выбор плана, отметки в магазине и история"
+    },
+    {
+      "name": "Администрирование",
+      "description": "Загрузка каталога (только роль admin)"
+    },
+    {
+      "name": "Служебное",
+      "description": "Проверки работоспособности"
+    }
+  ]
+}

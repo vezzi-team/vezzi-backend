@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Секреты и локальные настройки
+.env
+.env.*
+!.env.example
+
+# Данные: карты OSRM, выгрузки каталогов, резервные копии
+data/
+backups/
+*.osm.pbf
+
+# Редакторы и системные файлы
+.idea/
+.vscode/
+.DS_Store

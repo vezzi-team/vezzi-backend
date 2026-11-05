@@ -1,0 +1,33 @@
+# Сервер: docker compose -f compose.yaml -f deploy/compose.prod.yaml --profile routing up -d --build
+# compose.override.yaml при этом не подключается, поэтому БД и API наружу не открыты.
+# Снаружи доступен только Caddy на 80/443, он сам получает HTTPS-сертификат Let's Encrypt.
+services:
+  api:
+    environment:
+      ENVIRONMENT: production
+      DOCS_ENABLED: ${DOCS_ENABLED:-true}
+      ROUTING_PROVIDER: osrm
+      OFFER_MAX_AGE_HOURS: ${OFFER_MAX_AGE_HOURS:-24}
+    depends_on:
+      osrm:
+        condition: service_started
+
+  caddy:
+    image: caddy:2.10-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Укажите API_DOMAIN в .env}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  caddy-data:
+  caddy-config:
