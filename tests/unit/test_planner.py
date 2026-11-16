@@ -124,6 +124,55 @@ class TestVisitOrder:
         assert best.seconds == min(brute_force)
 
 
+class TestReturnToStart:
+    """Обратный путь к старту: по ТЗ не нужен, включается по желанию пользователя."""
+
+    # Из M1 до старта близко, из M2 далеко: без возврата выгоднее закончить в M2,
+    # а с возвратом лучше пройти M2 первым и закончить у старта через M1.
+    LEGS: ClassVar = {
+        (START, M1): minutes(2),
+        (START, M2): minutes(5),
+        (M1, M2): minutes(2),
+        (M2, M1): minutes(5),
+        (M1, START): minutes(2),
+        (M2, START): minutes(20),
+    }
+
+    def test_order_is_chosen_with_the_way_back(self) -> None:
+        one_way = best_visit_order({M1, M2}, self.LEGS)
+        round_trip = best_visit_order({M1, M2}, self.LEGS, return_to_start=True)
+
+        assert one_way is not None
+        assert (one_way.store_order, one_way.return_leg) == ((M1, M2), None)
+        assert round_trip is not None
+        assert round_trip.store_order == (M2, M1)
+        assert round_trip.return_leg == minutes(2)
+        assert round_trip.seconds == 12 * 60
+
+    def test_no_way_back_makes_order_impossible(self) -> None:
+        legs = {key: leg for key, leg in self.LEGS.items() if key[1] != START}
+        assert walk((M1, M2), legs, return_to_start=True) is None
+
+    def test_way_back_counts_in_time_and_limit(self) -> None:
+        data = replace(
+            reference_input(max_total_minutes=34),
+            legs={
+                **reference_input(60).legs,
+                (M1, START): minutes(8),
+                (M2, START): minutes(12),
+            },
+        )
+        one_way = find_plans(data).plans[0]
+        assert one_way.store_ids == (M1, M2)
+        assert one_way.total_seconds == 34 * 60
+
+        round_trip = find_plans(replace(data, return_to_start=True))
+        # Смешанный план с дорогой назад (12 минут из M2) уже не влезает в 34 минуты.
+        assert all(len(plan.visits) == 1 for plan in round_trip.plans)
+        assert round_trip.plans[0].return_walk == minutes(8)
+        assert round_trip.plans[0].walking_seconds == 16 * 60
+
+
 class TestProblems:
     def test_item_without_offers_is_reported(self) -> None:
         data = reference_input(60)

@@ -59,8 +59,12 @@ class Plan(TimestampMixin, Base):
     rank: Mapped[int] = mapped_column(SmallInteger)
     total_kopecks: Mapped[int]
     savings_kopecks: Mapped[int | None]
+    # Вся ходьба, включая обратный путь к старту, если пользователь его попросил.
     walking_seconds: Mapped[int]
     walking_meters: Mapped[int]
+    # Путь от последнего магазина к старту. None: маршрут заканчивается в последнем магазине (F09).
+    return_walk_seconds: Mapped[int | None]
+    return_walk_meters: Mapped[int | None]
     shopping_seconds: Mapped[int]
     route_provider: Mapped[str] = mapped_column(String(20))
     route_uses_road_network: Mapped[bool]

@@ -61,6 +61,20 @@ class TestSuccessfulPlans:
             "longitude": last_store["longitude"],
         }
 
+    def test_way_back_to_start_on_request(
+        self, client: TestClient, user_headers: dict[str, str], filled_cart: str
+    ) -> None:
+        one_way = calculate(client, user_headers, filled_cart).json()["plans"][0]
+        assert one_way["return_walk_seconds"] is None
+        assert one_way["route"]["points"][-1] != ITMO
+
+        body = calculate(client, user_headers, filled_cart, return_to_start=True).json()
+        for plan in body["plans"]:
+            assert plan["return_walk_seconds"] > 0
+            assert plan["route"]["points"][0] == plan["route"]["points"][-1] == ITMO
+            stop_walks = sum(stop["walk_from_previous_seconds"] for stop in plan["stops"])
+            assert plan["walking_seconds"] == stop_walks + plan["return_walk_seconds"]
+
     def test_savings_are_relative_to_best_single_store(
         self, client: TestClient, user_headers: dict[str, str], filled_cart: str
     ) -> None:

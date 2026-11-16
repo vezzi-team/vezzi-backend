@@ -3737,11 +3737,35 @@
           },
           "walking_seconds": {
             "type": "integer",
-            "title": "Walking Seconds"
+            "title": "Walking Seconds",
+            "description": "Вся ходьба, включая обратный путь, если он есть"
           },
           "walking_meters": {
             "type": "integer",
             "title": "Walking Meters"
+          },
+          "return_walk_seconds": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Walk Seconds",
+            "description": "Путь от последнего магазина к старту; null, если маршрут заканчивается там"
+          },
+          "return_walk_meters": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Return Walk Meters"
           },
           "shopping_seconds": {
             "type": "integer",
@@ -3815,6 +3839,8 @@
           "stores_count",
           "walking_seconds",
           "walking_meters",
+          "return_walk_seconds",
+          "return_walk_meters",
           "shopping_seconds",
           "total_seconds",
           "stops",
@@ -3855,6 +3881,12 @@
             "type": "array",
             "maxItems": 30,
             "title": "Substitutions"
+          },
+          "return_to_start": {
+            "type": "boolean",
+            "title": "Return To Start",
+            "description": "Вернуться от последнего магазина к старту. По ТЗ (F09) маршрут заканчивается в последнем магазине, поэтому по умолчанию false. Если true, обратный путь входит в общее время и в лимит max_total_minutes, а порядок магазинов выбирается с его учётом",
+            "default": false
           },
           "store_ids": {
             "anyOf": [

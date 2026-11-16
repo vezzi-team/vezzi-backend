@@ -84,6 +84,18 @@ def run(base_url: str, insecure: bool) -> int:
         complete = [chain for chain in chains if chain["is_complete"]]
         check("сравнение сетей", bool(complete), f"полных корзин: {len(complete)} из {len(chains)}")
 
+        round_trip = client.post(
+            f"/api/v1/carts/{cart['id']}/plans",
+            json={
+                "start": START,
+                "max_stores": 3,
+                "max_total_minutes": 120,
+                "return_to_start": True,
+            },
+        ).json()
+        back = round_trip["plans"][0]["return_walk_seconds"] if round_trip.get("plans") else None
+        check("маршрут с возвратом к старту", bool(back), f"обратный путь: {back} с")
+
         started = time.perf_counter()
         response = client.post(
             f"/api/v1/carts/{cart['id']}/plans",

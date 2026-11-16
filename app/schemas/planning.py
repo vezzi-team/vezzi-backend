@@ -23,6 +23,14 @@ class PlanRequest(Schema):
         default=60, ge=10, le=180, description="Лимит общего времени: дорога и покупки"
     )
     substitutions: list[Substitution] = Field(default_factory=list, max_length=30)
+    return_to_start: bool = Field(
+        default=False,
+        description=(
+            "Вернуться от последнего магазина к старту. По ТЗ (F09) маршрут заканчивается "
+            "в последнем магазине, поэтому по умолчанию false. Если true, обратный путь входит "
+            "в общее время и в лимит max_total_minutes, а порядок магазинов выбирается с его учётом"
+        ),
+    )
     store_ids: list[int] | None = Field(
         default=None,
         min_length=1,
@@ -89,8 +97,12 @@ class PlanRead(Schema):
         description="Экономия к лучшему плану в одном магазине; null, если сравнивать не с чем"
     )
     stores_count: int
-    walking_seconds: int
+    walking_seconds: int = Field(description="Вся ходьба, включая обратный путь, если он есть")
     walking_meters: int
+    return_walk_seconds: int | None = Field(
+        description="Путь от последнего магазина к старту; null, если маршрут заканчивается там"
+    )
+    return_walk_meters: int | None
     shopping_seconds: int
     total_seconds: int
     stops: list[PlanStopRead]

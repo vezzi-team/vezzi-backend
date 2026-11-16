@@ -100,11 +100,12 @@ def calculate_plans(
         PlanningInput(
             basket=basket,
             prices=prices,
-            legs=_travel_legs(routing, start, candidates),
+            legs=_travel_legs(routing, start, candidates, request.return_to_start),
             max_stores=request.max_stores,
             max_total_seconds=request.max_total_minutes * 60,
             shopping_time=_shopping_time_model(settings),
             store_formats={store.id: store.format.value for store in candidates},
+            return_to_start=request.return_to_start,
         )
     )
 
@@ -199,26 +200,34 @@ def _radius_to_cover(
 
 
 def _travel_legs(
-    routing: RoutingProvider, start: GeoPoint, stores: Sequence[Store]
+    routing: RoutingProvider, start: GeoPoint, stores: Sequence[Store], return_to_start: bool
 ) -> dict[tuple[Place, Place], Leg]:
     if not stores:
         return {}
     store_points = [GeoPoint(store.latitude, store.longitude) for store in stores]
+    origins: list[Place] = [START, *(store.id for store in stores)]
+    destinations: list[Place] = [store.id for store in stores]
+    destination_points = list(store_points)
+    if return_to_start:
+        # Нужен ещё путь из каждого магазина обратно к старту.
+        destinations.append(START)
+        destination_points.append(start)
     try:
-        matrix = routing.walking_matrix(origins=[start, *store_points], destinations=store_points)
+        matrix = routing.walking_matrix(
+            origins=[start, *store_points], destinations=destination_points
+        )
     except NoRouteError:
         return {}  # старт или магазины далеко от пешеходных дорог: планировщик сообщит об этом
     except RoutingError as exc:
         raise _routing_unavailable() from exc
 
-    origins: list[Place] = [START, *(store.id for store in stores)]
     legs: dict[tuple[Place, Place], Leg] = {}
     for row, origin in enumerate(origins):
-        for column, store in enumerate(stores):
+        for column, destination in enumerate(destinations):
             seconds = matrix.seconds[row][column]
             meters = matrix.meters[row][column]
-            if origin != store.id and seconds is not None and meters is not None:
-                legs[(origin, store.id)] = Leg(seconds, meters)
+            if origin != destination and seconds is not None and meters is not None:
+                legs[(origin, destination)] = Leg(seconds, meters)
     return legs
 
 
@@ -235,6 +244,8 @@ def _with_routes(
                 for i in plan.store_ids
             ),
         ]
+        if plan.return_walk is not None:
+            waypoints.append(context.start)
         try:
             route = routing.walking_route(waypoints)
         except NoRouteError:
@@ -262,6 +273,8 @@ def _to_model(
         savings_kopecks=optimizer.savings_kopecks(plan, baseline),
         walking_seconds=plan.walking_seconds,
         walking_meters=plan.walking_meters,
+        return_walk_seconds=plan.return_walk.seconds if plan.return_walk else None,
+        return_walk_meters=plan.return_walk.meters if plan.return_walk else None,
         shopping_seconds=plan.shopping_seconds,
         route_provider=routing.name,
         route_uses_road_network=routing.uses_road_network,

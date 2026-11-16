@@ -49,6 +49,8 @@ class StoreVisit:
 @dataclass(frozen=True)
 class Plan:
     visits: tuple[StoreVisit, ...]
+    # Путь от последнего магазина к старту, если пользователь попросил вернуться (по ТЗ не нужно).
+    return_walk: Leg | None = None
 
     @property
     def store_ids(self) -> tuple[int, ...]:
@@ -60,11 +62,13 @@ class Plan:
 
     @property
     def walking_seconds(self) -> int:
-        return sum(visit.walk_from_previous.seconds for visit in self.visits)
+        back = self.return_walk.seconds if self.return_walk else 0
+        return sum(visit.walk_from_previous.seconds for visit in self.visits) + back
 
     @property
     def walking_meters(self) -> int:
-        return sum(visit.walk_from_previous.meters for visit in self.visits)
+        back = self.return_walk.meters if self.return_walk else 0
+        return sum(visit.walk_from_previous.meters for visit in self.visits) + back
 
     @property
     def shopping_seconds(self) -> int:
@@ -92,6 +96,7 @@ class PlanningInput:
     max_total_seconds: int
     shopping_time: ShoppingTimeModel
     store_formats: Mapping[int, str]
+    return_to_start: bool = False
 
 
 @dataclass(frozen=True)
@@ -180,7 +185,7 @@ def _complete_plans(data: PlanningInput, candidates: list[int]) -> tuple[list[Pl
 def _build_plan(
     data: PlanningInput, assignment: list[AssignedItem], stores: frozenset[int]
 ) -> Plan | None:
-    route = best_visit_order(stores, data.legs)
+    route = best_visit_order(stores, data.legs, data.return_to_start)
     if route is None:
         return None
 
@@ -193,7 +198,7 @@ def _build_plan(
             store_format=data.store_formats.get(store_id, "supermarket"),
         )
         visits.append(StoreVisit(store_id, items, leg, shopping))
-    return Plan(tuple(visits))
+    return Plan(tuple(visits), route.return_leg)
 
 
 def _min_stores_to_cover(data: PlanningInput, candidates: list[int]) -> int | None:
