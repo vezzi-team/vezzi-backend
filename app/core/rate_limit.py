@@ -1,4 +1,7 @@
-"""Ограничение частоты запросов к входу и регистрации (защита от перебора паролей).
+"""Ограничение частоты запросов с одного IP-адреса.
+
+Вход и регистрация защищены строгим лимитом от перебора паролей. Открытый каталог
+защищён мягким лимитом, чтобы его нельзя было бесконечно скачивать.
 
 Счётчики живут в памяти процесса. Если запустить несколько воркеров uvicorn,
 у каждого будет свой счётчик. Для учебного стенда этого достаточно; в большом
@@ -8,11 +11,12 @@
 import threading
 import time
 from collections import defaultdict, deque
+from collections.abc import Callable
 from typing import ClassVar
 
 from fastapi import Request
 
-from app.core.config import get_settings
+from app.core.config import Settings, get_settings
 from app.core.errors import RateLimitedError
 
 
@@ -21,15 +25,18 @@ class RateLimit:
 
     _instances: ClassVar[list["RateLimit"]] = []
 
-    def __init__(self, scope: str, window_seconds: int = 60) -> None:
+    def __init__(
+        self, scope: str, limit: Callable[[Settings], int], window_seconds: int = 60
+    ) -> None:
         self.scope = scope
+        self.limit = limit
         self.window_seconds = window_seconds
         self._hits: dict[str, deque[float]] = defaultdict(deque)
         self._lock = threading.Lock()
         RateLimit._instances.append(self)
 
     def __call__(self, request: Request) -> None:
-        limit = get_settings().auth_rate_limit_per_minute
+        limit = self.limit(get_settings())
         client = request.client.host if request.client else "unknown"
         now = time.monotonic()
         with self._lock:
@@ -51,6 +58,15 @@ class RateLimit:
             instance.reset()
 
 
-login_rate_limit = RateLimit("login")
-register_rate_limit = RateLimit("register")
-refresh_rate_limit = RateLimit("refresh")
+def _auth_limit(settings: Settings) -> int:
+    return settings.auth_rate_limit_per_minute
+
+
+def _public_limit(settings: Settings) -> int:
+    return settings.public_rate_limit_per_minute
+
+
+login_rate_limit = RateLimit("login", _auth_limit)
+register_rate_limit = RateLimit("register", _auth_limit)
+refresh_rate_limit = RateLimit("refresh", _auth_limit)
+catalog_rate_limit = RateLimit("catalog", _public_limit)

@@ -37,7 +37,9 @@ def run(base_url: str, insecure: bool) -> int:
     check("база отвечает", client.get("/ready").status_code == 200)
     build = client.get("/version").json()
     check("версия сборки", "version" in build, build)
-    check("без токена нельзя", client.get("/api/v1/carts").status_code == 401)
+    check("корзины без токена закрыты", client.get("/api/v1/carts").status_code == 401)
+    guest = client.get("/api/v1/products/search", params={"q": QUERIES[0]})
+    check("каталог открыт без входа", guest.status_code == 200 and bool(guest.json()))
 
     email = f"smoke-{uuid.uuid4().hex[:12]}@example.com"
     password = uuid.uuid4().hex

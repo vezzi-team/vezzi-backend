@@ -453,8 +453,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "429": {
+            "description": "Too Many Requests",
             "content": {
               "application/json": {
                 "schema": {
@@ -463,12 +463,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
+        }
       }
     },
     "/api/v1/catalog/export": {
@@ -479,11 +474,6 @@
         "summary": "Export Catalog",
         "description": "Весь активный каталог для локального кэша приложения: товары, магазины и цены.\n\nСнимок каталога после публикации не меняется, поэтому его номер служит меткой ETag.\nКлиент присылает её в If-None-Match и, если каталог прежний, получает пустой ответ 304.",
         "operationId": "export_catalog",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
         "parameters": [
           {
             "name": "if-none-match",
@@ -513,7 +503,7 @@
               }
             }
           },
-          "401": {
+          "429": {
             "content": {
               "application/json": {
                 "schema": {
@@ -521,7 +511,7 @@
                 }
               }
             },
-            "description": "Unauthorized"
+            "description": "Too Many Requests"
           },
           "304": {
             "description": "Каталог не менялся"
@@ -557,11 +547,6 @@
         "summary": "Search Products",
         "description": "Поиск товара по названию, не больше 10 вариантов (F02).\n\nПустой список означает, что ничего не найдено.",
         "operationId": "search_products",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
         "parameters": [
           {
             "name": "q",
@@ -604,7 +589,7 @@
               }
             }
           },
-          "401": {
+          "429": {
             "content": {
               "application/json": {
                 "schema": {
@@ -612,7 +597,7 @@
                 }
               }
             },
-            "description": "Unauthorized"
+            "description": "Too Many Requests"
           },
           "422": {
             "description": "Validation Error",
@@ -635,11 +620,6 @@
         "summary": "Get Analogs",
         "description": "До трёх аналогов для замены товара (F10), от самого похожего.\n\nАналог того же вида, с тем же процентом в названии и фасовкой в пределах ±30 %,\nи его сейчас можно купить. Пустой список означает, что подходящей замены нет.\nВ расчёт аналог попадает, только если пользователь подтвердил замену\n(поле substitutions в POST /carts/{cart_id}/plans).",
         "operationId": "get_analogs",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
         "parameters": [
           {
             "name": "product_id",
@@ -666,7 +646,7 @@
               }
             }
           },
-          "401": {
+          "429": {
             "content": {
               "application/json": {
                 "schema": {
@@ -674,7 +654,7 @@
                 }
               }
             },
-            "description": "Unauthorized"
+            "description": "Too Many Requests"
           },
           "404": {
             "content": {
@@ -707,11 +687,6 @@
         "summary": "Get Product",
         "description": "Карточка товара и цены во всех магазинах с отметкой свежести (F04).",
         "operationId": "get_product",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
         "parameters": [
           {
             "name": "product_id",
@@ -734,7 +709,7 @@
               }
             }
           },
-          "401": {
+          "429": {
             "content": {
               "application/json": {
                 "schema": {
@@ -742,7 +717,7 @@
                 }
               }
             },
-            "description": "Unauthorized"
+            "description": "Too Many Requests"
           },
           "404": {
             "content": {
@@ -775,11 +750,6 @@
         "summary": "List Stores",
         "description": "Магазины пилота. Если передать координаты, ближайшие будут первыми.",
         "operationId": "list_stores",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
         "parameters": [
           {
             "name": "latitude",
@@ -833,7 +803,7 @@
               }
             }
           },
-          "401": {
+          "429": {
             "content": {
               "application/json": {
                 "schema": {
@@ -841,7 +811,7 @@
                 }
               }
             },
-            "description": "Unauthorized"
+            "description": "Too Many Requests"
           },
           "422": {
             "description": "Validation Error",

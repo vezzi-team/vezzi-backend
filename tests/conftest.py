@@ -20,6 +20,7 @@ os.environ.update(
         "JWT_SECRET_KEY": "test-secret-key-that-is-long-enough-for-hs256",
         "ROUTING_PROVIDER": "fake",
         "AUTH_RATE_LIMIT_PER_MINUTE": "1000",
+        "PUBLIC_RATE_LIMIT_PER_MINUTE": "1000",
         "LOG_LEVEL": "WARNING",
     }
 )

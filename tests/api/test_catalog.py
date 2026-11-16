@@ -1,10 +1,12 @@
 from datetime import UTC, datetime, timedelta
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from app.catalog_import.publisher import ImportReport, publish_catalog
+from app.core.config import get_settings
 from app.demo.catalog import build_demo_catalog
 from app.models import Offer, PackageUnit, Product, Store
 
@@ -101,8 +103,10 @@ class TestSearch:
         names = [product["name"] for product in response.json()]
         assert "Молоко из прошлой загрузки" not in names
 
-    def test_requires_auth(self, client: TestClient) -> None:
-        assert client.get(SEARCH, params={"q": "молоко"}).status_code == 401
+    def test_works_without_login(self, client: TestClient, demo_catalog: ImportReport) -> None:
+        response = client.get(SEARCH, params={"q": "молоко"})
+        assert response.status_code == 200
+        assert response.json()
 
 
 class TestProductDetail:
@@ -255,9 +259,43 @@ class TestExport:
         other = client.get(EXPORT, headers={**user_headers, "If-None-Match": '"old"'})
         assert other.status_code == 200
 
-    def test_requires_login_and_loaded_catalog(
-        self, client: TestClient, user_headers: dict[str, str]
-    ) -> None:
-        assert client.get(EXPORT).status_code == 401
-        response = client.get(EXPORT, headers=user_headers)
+    def test_requires_loaded_catalog(self, client: TestClient) -> None:
+        response = client.get(EXPORT)
         assert (response.status_code, response.json()["code"]) == (503, "catalog_not_loaded")
+
+
+class TestPublicAccess:
+    """Каталог открыт без входа, а данные пользователя по-прежнему требуют токен (решение 18)."""
+
+    @pytest.mark.parametrize(
+        "path",
+        [
+            "/api/v1/catalog",
+            EXPORT,
+            f"{SEARCH}?q=молоко",
+            "/api/v1/stores?latitude=59.9571&longitude=30.3084",
+        ],
+    )
+    def test_catalog_is_open_without_login(
+        self, client: TestClient, demo_catalog: ImportReport, path: str
+    ) -> None:
+        assert client.get(path).status_code == 200
+
+    def test_product_card_is_open_without_login(
+        self, client: TestClient, session: Session, demo_catalog: ImportReport
+    ) -> None:
+        product_id = session.scalar(select(Product.id).order_by(Product.id).limit(1))
+        assert client.get(f"/api/v1/products/{product_id}").status_code == 200
+
+    @pytest.mark.parametrize("path", ["/api/v1/carts", "/api/v1/plans", "/api/v1/users/me"])
+    def test_user_data_still_requires_login(self, client: TestClient, path: str) -> None:
+        response = client.get(path)
+        assert response.status_code == 401
+        assert response.json()["code"] == "not_authenticated"
+
+    def test_rate_limit_per_ip(
+        self, client: TestClient, demo_catalog: ImportReport, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setattr(get_settings(), "public_rate_limit_per_minute", 3)
+        statuses = [client.get("/api/v1/catalog").status_code for _ in range(4)]
+        assert statuses == [200, 200, 200, 429]

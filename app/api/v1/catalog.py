@@ -1,9 +1,10 @@
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Header, Query, Response, status
+from fastapi import APIRouter, Depends, Header, Query, Response, status
 
-from app.api.deps import CurrentUser, SessionDep, SettingsDep
+from app.api.deps import SessionDep, SettingsDep
+from app.core.rate_limit import catalog_rate_limit
 from app.routing import GeoPoint
 from app.schemas.catalog import (
     AnalogRead,
@@ -20,13 +21,19 @@ from app.schemas.common import error_responses
 from app.services import analogs as analogs_service
 from app.services import catalog as catalog_service
 
-router = APIRouter(tags=["Каталог"], responses=error_responses(401))
+# Каталог открыт без входа: пользователь сначала смотрит товары и только потом регистрируется.
+# Корзины, планы и профиль по-прежнему требуют токен (docs/decisions.md, решение 18).
+router = APIRouter(
+    tags=["Каталог"],
+    dependencies=[Depends(catalog_rate_limit)],
+    responses=error_responses(429),
+)
 
 MAX_SEARCH_RESULTS = 10
 
 
 @router.get("/catalog")
-def get_catalog_status(_: CurrentUser, session: SessionDep, settings: SettingsDep) -> CatalogStatus:
+def get_catalog_status(session: SessionDep, settings: SettingsDep) -> CatalogStatus:
     """Какой каталог сейчас загружен. Если is_synthetic = true, цены демонстрационные."""
     active = catalog_service.get_active_import(session)
     if active is None:
@@ -52,7 +59,6 @@ def get_catalog_status(_: CurrentUser, session: SessionDep, settings: SettingsDe
     response_model=CatalogExport,
 )
 def export_catalog(
-    _: CurrentUser,
     session: SessionDep,
     settings: SettingsDep,
     response: Response,
@@ -84,7 +90,6 @@ def export_catalog(
 
 @router.get("/products/search")
 def search_products(
-    _: CurrentUser,
     session: SessionDep,
     q: Annotated[str, Query(min_length=1, max_length=100, description="Текст запроса")],
     limit: Annotated[int, Query(ge=1, le=MAX_SEARCH_RESULTS)] = MAX_SEARCH_RESULTS,
@@ -98,9 +103,7 @@ def search_products(
 
 
 @router.get("/products/{product_id}/analogs", responses=error_responses(404))
-def get_analogs(
-    product_id: int, _: CurrentUser, session: SessionDep, settings: SettingsDep
-) -> list[AnalogRead]:
+def get_analogs(product_id: int, session: SessionDep, settings: SettingsDep) -> list[AnalogRead]:
     """До трёх аналогов для замены товара (F10), от самого похожего.
 
     Аналог того же вида, с тем же процентом в названии и фасовкой в пределах ±30 %,
@@ -123,9 +126,7 @@ def get_analogs(
 
 
 @router.get("/products/{product_id}", responses=error_responses(404))
-def get_product(
-    product_id: int, _: CurrentUser, session: SessionDep, settings: SettingsDep
-) -> ProductDetail:
+def get_product(product_id: int, session: SessionDep, settings: SettingsDep) -> ProductDetail:
     """Карточка товара и цены во всех магазинах с отметкой свежести (F04)."""
     product = catalog_service.get_product(session, product_id)
     offers = catalog_service.list_product_offers(
@@ -153,7 +154,6 @@ def get_product(
 
 @router.get("/stores")
 def list_stores(
-    _: CurrentUser,
     session: SessionDep,
     latitude: Annotated[float | None, Query(ge=-90, le=90)] = None,
     longitude: Annotated[float | None, Query(ge=-180, le=180)] = None,

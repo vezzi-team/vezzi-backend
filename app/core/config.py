@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     access_token_ttl_minutes: int = Field(default=30, ge=1)
     refresh_token_ttl_days: int = Field(default=30, ge=1)
     auth_rate_limit_per_minute: int = Field(default=10, ge=1)
+    # Каталог открыт без входа: лимит запросов в минуту с одного IP (docs/decisions.md, решение 18).
+    public_rate_limit_per_minute: int = Field(default=120, ge=1)
 
     # По ТЗ (F04) порог 6 часов, руководитель позже утвердил 24 часа. См. docs/decisions.md.
     offer_max_age_hours: int = Field(default=24, ge=1)

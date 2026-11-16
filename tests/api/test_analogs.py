@@ -156,5 +156,10 @@ class TestAnalogs:
         response = client.get("/api/v1/products/123456/analogs", headers=user_headers)
         assert response.status_code == 404
 
-    def test_requires_auth(self, client: TestClient) -> None:
-        assert client.get("/api/v1/products/1/analogs").status_code == 401
+    def test_works_without_login(
+        self, client: TestClient, session: Session, milk_catalog: None
+    ) -> None:
+        milk = product_id_by_name(session, "Простоквашино Молоко")
+        response = client.get(f"/api/v1/products/{milk}/analogs")
+        assert response.status_code == 200
+        assert response.json()
