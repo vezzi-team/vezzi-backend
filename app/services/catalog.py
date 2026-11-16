@@ -4,16 +4,19 @@ from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from sqlalchemy import ColumnElement, and_, func, or_, select
+from smartcart_ml.text import normalize
+from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.errors import NotFoundError, ServiceUnavailableError
 from app.models import CatalogImport, ImportStatus, Offer, Product, Store
 from app.routing import GeoPoint
 from app.routing.geo import haversine_meters
+from app.services import ml_matcher
 
-# Порог похожести для триграммного поиска (как по умолчанию в pg_trgm): ловит «кифир», «малоко».
-FUZZY_SIMILARITY_THRESHOLD = 0.3
+# Оценка ML-модуля ниже 0,2 означает случайное совпадение букв: на бессмысленных запросах
+# вроде «йцукен» лучший результат почти всегда ниже. Как выбран порог: docs/decisions.md.
+MIN_SEARCH_SCORE = 0.2
 
 
 @dataclass(frozen=True)
@@ -46,28 +49,23 @@ def require_active_import(session: Session) -> CatalogImport:
 
 
 def search_products(session: Session, query: str, limit: int) -> list[Product]:
-    """Поиск по названию: сначала товары, где встречаются все слова запроса, затем похожие.
+    """Поиск по названию через ML-модуль команды. Он сравнивает буквосочетания, поэтому
+    находит товар и с опечаткой: «кифир», «тварог».
 
     Ищем только среди товаров, которые продаются в активном каталоге: товары из
     прошлых загрузок остаются в базе ради старых планов, но предлагать их не нужно.
-    Сейчас это простой поиск силами PostgreSQL (ILIKE + расширение pg_trgm).
-    Модуль ML от участника команды сможет заменить эту функцию, не меняя API.
     """
-    words = query.lower().split()
     active = get_active_import(session)
-    if not words or active is None:
+    # Запрос из одних знаков препинания модуль не принимает: искать в нём нечего.
+    if active is None or not normalize(query):
         return []
-    contains_all_words = and_(*(Product.name.ilike(f"%{_escape_like(word)}%") for word in words))
-    similarity = func.word_similarity(query, Product.name)
-    sold_now = select(Offer.id).where(Offer.import_id == active.id, Offer.product_id == Product.id)
-    statement = (
-        select(Product)
-        .where(sold_now.exists())
-        .where(or_(contains_all_words, similarity >= FUZZY_SIMILARITY_THRESHOLD))
-        .order_by(contains_all_words.desc(), similarity.desc(), Product.name)
-        .limit(limit)
-    )
-    return list(session.scalars(statement))
+    found = ml_matcher.matcher_for(session, active).search(query, top_k=limit)
+    ids = [row["product_id"] for row in found if row["score"] >= MIN_SEARCH_SCORE]
+    products = {
+        product.id: product
+        for product in session.scalars(select(Product).where(Product.id.in_(ids)))
+    }
+    return [products[product_id] for product_id in ids]
 
 
 def load_catalog_contents(session: Session, import_id: int) -> CatalogContents:
@@ -169,6 +167,19 @@ def count_fresh_offers(session: Session, import_id: int, now: datetime, max_age_
     return session.scalar(statement) or 0
 
 
+def cheapest_fresh_prices(
+    session: Session, import_id: int, now: datetime, max_age_hours: int
+) -> dict[int, int]:
+    """Самая низкая цена каждого товара среди тех, что участвуют в расчёте."""
+    statement = (
+        select(Offer.product_id, func.min(Offer.price_kopecks))
+        .join(Store)
+        .where(Offer.import_id == import_id, *_usable_for_planning(now, max_age_hours))
+        .group_by(Offer.product_id)
+    )
+    return {product_id: price for product_id, price in session.execute(statement).all()}
+
+
 def _usable_for_planning(now: datetime, max_age_hours: int) -> list[ColumnElement[bool]]:
     return [
         Offer.in_stock.is_(True),
@@ -194,7 +205,3 @@ def store_distance_order(
 
 def _point(store: Store) -> GeoPoint:
     return GeoPoint(store.latitude, store.longitude)
-
-
-def _escape_like(text: str) -> str:
-    return text.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")

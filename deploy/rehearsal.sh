@@ -10,8 +10,8 @@ set -euo pipefail
 
 export API_DOMAIN=localhost
 export POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-rehearsal-password}"
-# Цены в таблице команды растянуты на 10 дней. На настоящих суточных данных будет 24.
-export OFFER_MAX_AGE_HOURS="${OFFER_MAX_AGE_HOURS:-264}"
+# Данные синтетические, на время MVP срок свежести 14 суток (docs/decisions.md, решение 5).
+export OFFER_MAX_AGE_HOURS="${OFFER_MAX_AGE_HOURS:-336}"
 BUILD_COMMIT="$(git rev-parse --short HEAD)"
 export BUILD_COMMIT
 

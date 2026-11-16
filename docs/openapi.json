@@ -627,6 +627,78 @@
         }
       }
     },
+    "/api/v1/products/{product_id}/analogs": {
+      "get": {
+        "tags": [
+          "Каталог"
+        ],
+        "summary": "Get Analogs",
+        "description": "До трёх аналогов для замены товара (F10), от самого похожего.\n\nАналог того же вида, с тем же процентом в названии и фасовкой в пределах ±30 %,\nи его сейчас можно купить. Пустой список означает, что подходящей замены нет.\nВ расчёт аналог попадает, только если пользователь подтвердил замену\n(поле substitutions в POST /carts/{cart_id}/plans).",
+        "operationId": "get_analogs",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AnalogRead"
+                  },
+                  "title": "Response Get Analogs"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/products/{product_id}": {
       "get": {
         "tags": [
@@ -2154,6 +2226,89 @@
   },
   "components": {
     "schemas": {
+      "AnalogRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "examples": [
+              "Простоквашино Молоко 2,5%, 930 мл"
+            ]
+          },
+          "brand": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Brand"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "product_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Type"
+          },
+          "package_amount": {
+            "type": "number",
+            "title": "Package Amount",
+            "description": "Фасовка в базовых единицах",
+            "examples": [
+              930
+            ]
+          },
+          "package_unit": {
+            "$ref": "#/components/schemas/PackageUnit",
+            "description": "g: граммы, ml: миллилитры, pcs: штуки, m: метры"
+          },
+          "min_price_kopecks": {
+            "type": "integer",
+            "title": "Min Price Kopecks",
+            "description": "Самая низкая цена среди тех, что участвуют в расчёте",
+            "examples": [
+              8490
+            ]
+          },
+          "similarity": {
+            "type": "number",
+            "title": "Similarity",
+            "description": "Похожесть названий по оценке ML-модуля, от 0 до 1",
+            "examples": [
+              0.47
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "brand",
+          "category",
+          "product_type",
+          "package_amount",
+          "package_unit",
+          "min_price_kopecks",
+          "similarity"
+        ],
+        "title": "AnalogRead",
+        "description": "Товар, которым можно заменить выбранный (F10). Вид и процент у него те же."
+      },
       "AuthResponse": {
         "properties": {
           "user": {

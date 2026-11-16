@@ -16,6 +16,17 @@ class ProductRead(Schema):
     package_unit: PackageUnit = Field(description="g: граммы, ml: миллилитры, pcs: штуки, m: метры")
 
 
+class AnalogRead(ProductRead):
+    """Товар, которым можно заменить выбранный (F10). Вид и процент у него те же."""
+
+    min_price_kopecks: int = Field(
+        examples=[8490], description="Самая низкая цена среди тех, что участвуют в расчёте"
+    )
+    similarity: float = Field(
+        examples=[0.47], description="Похожесть названий по оценке ML-модуля, от 0 до 1"
+    )
+
+
 class StoreRead(Schema):
     id: int
     chain: str

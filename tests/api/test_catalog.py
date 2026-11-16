@@ -31,12 +31,46 @@ class TestSearch:
     def test_returns_at_most_ten(
         self, client: TestClient, user_headers: dict[str, str], demo_catalog: ImportReport
     ) -> None:
-        response = client.get(SEARCH, headers=user_headers, params={"q": "демо"})
+        response = client.get(SEARCH, headers=user_headers, params={"q": "молоко"})
         assert len(response.json()) == 10
-        assert (
-            client.get(SEARCH, headers=user_headers, params={"q": "демо", "limit": 11}).status_code
-            == 422
-        )
+        limited = client.get(SEARCH, headers=user_headers, params={"q": "молоко", "limit": 3})
+        assert len(limited.json()) == 3
+        too_many = client.get(SEARCH, headers=user_headers, params={"q": "молоко", "limit": 11})
+        assert too_many.status_code == 422
+
+    def test_tolerates_typo_in_the_middle_of_a_word(
+        self, client: TestClient, user_headers: dict[str, str], demo_catalog: ImportReport
+    ) -> None:
+        response = client.get(SEARCH, headers=user_headers, params={"q": "малоко"})
+        assert response.json()
+        assert all("Молоко" in product["name"] for product in response.json()[:3])
+
+    def test_punctuation_only_query_finds_nothing(
+        self, client: TestClient, user_headers: dict[str, str], demo_catalog: ImportReport
+    ) -> None:
+        response = client.get(SEARCH, headers=user_headers, params={"q": "?!"})
+        assert response.status_code == 200
+        assert response.json() == []
+
+    def test_new_catalog_is_searched_after_publication(
+        self, client: TestClient, session: Session, user_headers: dict[str, str]
+    ) -> None:
+        now = datetime.now(UTC)
+        first = build_demo_catalog(now)
+        publish_catalog(session, first, source_name="first", file_sha256="first", now=now)
+        assert client.get(SEARCH, headers=user_headers, params={"q": "кефир"}).json()
+
+        # В новом снимке кефира нет: поиск должен строиться уже по нему, а не по старому.
+        second = build_demo_catalog(now)
+        kefir = {p.external_id for p in second.products if "Кефир" in p.name}
+        second.offers = [o for o in second.offers if o.product_external_id not in kefir]
+        publish_catalog(session, second, source_name="second", file_sha256="second", now=now)
+
+        names = [
+            p["name"]
+            for p in client.get(SEARCH, headers=user_headers, params={"q": "кефир"}).json()
+        ]
+        assert not any("Кефир" in name for name in names)
 
     def test_nothing_found_is_empty_list(
         self, client: TestClient, user_headers: dict[str, str], demo_catalog: ImportReport

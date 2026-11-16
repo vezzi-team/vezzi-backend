@@ -34,7 +34,7 @@ from app.schemas.planning import (
     PlanResponse,
     Substitution,
 )
-from app.services import carts, catalog
+from app.services import analogs, carts, catalog
 from app.services import plans as plans_service
 
 
@@ -149,11 +149,18 @@ def _basket(
             raise BusinessRuleError(
                 f"Товара {substitution.product_id} нет в корзине", code="invalid_substitution"
             )
-        if session.get(Product, substitution.replacement_product_id) is None:
+        replacement = session.get(Product, substitution.replacement_product_id)
+        if replacement is None:
             raise NotFoundError("Товар для замены не найден", code="product_not_found")
+        original = session.get_one(Product, substitution.product_id)
+        problem = analogs.substitution_problem(original, replacement)
+        if problem is not None:
+            raise BusinessRuleError(
+                f"«{replacement.name}» не подходит для замены: {problem}",
+                code="invalid_substitution",
+            )
         quantity = quantities.pop(substitution.product_id)
-        replacement = substitution.replacement_product_id
-        quantities[replacement] = min(MAX_QUANTITY, quantities.get(replacement, 0) + quantity)
+        quantities[replacement.id] = min(MAX_QUANTITY, quantities.get(replacement.id, 0) + quantity)
 
     return [BasketItem(product_id, quantity) for product_id, quantity in quantities.items()]
 

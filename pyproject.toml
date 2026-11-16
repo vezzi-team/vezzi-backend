@@ -16,6 +16,7 @@ dependencies = [
     "pydantic-settings>=2.16",
     "pyjwt>=2.15",
     "python-multipart>=0.0.20",
+    "smartcart-ml",
     "sqlalchemy>=2.1",
     "tzdata>=2024.2",
     "uvicorn[standard]>=0.54",
@@ -23,6 +24,10 @@ dependencies = [
 
 [project.scripts]
 vezzi = "app.cli:main"
+
+[tool.uv.sources]
+# ML-модуль команды (поиск и аналоги), копия лежит в папке ml/, см. ml/README.md.
+smartcart-ml = { path = "ml" }
 
 [dependency-groups]
 dev = [
@@ -42,6 +47,7 @@ packages = ["app"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["ml"]  # код ML-модуля команды, проверяется в его проекте
 
 [tool.ruff.lint]
 select = [
@@ -78,7 +84,7 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 
 [[tool.mypy.overrides]]
-module = ["openpyxl.*"]
+module = ["openpyxl.*", "pandas.*", "smartcart_ml.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

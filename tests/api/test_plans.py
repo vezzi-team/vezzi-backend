@@ -87,20 +87,40 @@ class TestSuccessfulPlans:
         user_headers: dict[str, str],
         filled_cart: str,
     ) -> None:
-        milk = product_id_by_name(session, "Молоко 2,5%")
-        kefir = product_id_by_name(session, "Кефир")
+        spaghetti = product_id_by_name(session, "Спагетти, 400 г")
+        horns = product_id_by_name(session, "Макароны рожки, 400 г")
         body = calculate(
             client,
             user_headers,
             filled_cart,
-            substitutions=[{"product_id": milk, "replacement_product_id": kefir}],
+            substitutions=[{"product_id": spaghetti, "replacement_product_id": horns}],
         ).json()
 
         bought = {
             item["product"]["id"] for stop in body["plans"][0]["stops"] for item in stop["items"]
         }
-        assert kefir in bought
-        assert milk not in bought
+        assert horns in bought
+        assert spaghetti not in bought
+
+    def test_forbidden_substitution_is_rejected(
+        self,
+        client: TestClient,
+        session: Session,
+        user_headers: dict[str, str],
+        filled_cart: str,
+    ) -> None:
+        milk = product_id_by_name(session, "Молоко 2,5%")
+        kefir = product_id_by_name(session, "Кефир")
+        response = calculate(
+            client,
+            user_headers,
+            filled_cart,
+            substitutions=[{"product_id": milk, "replacement_product_id": kefir}],
+        )
+
+        assert response.status_code == 422
+        assert response.json()["code"] == "invalid_substitution"
+        assert "другой вид товара" in response.json()["message"]
 
 
 class TestProblems:

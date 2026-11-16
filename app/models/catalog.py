@@ -60,15 +60,7 @@ class Store(TimestampMixin, Base):
 
 class Product(TimestampMixin, Base):
     __tablename__ = "products"
-    __table_args__ = (
-        CheckConstraint("package_amount > 0", name="package_amount_positive"),
-        Index(
-            "ix_products_name_trgm",
-            "name",
-            postgresql_using="gin",
-            postgresql_ops={"name": "gin_trgm_ops"},
-        ),
-    )
+    __table_args__ = (CheckConstraint("package_amount > 0", name="package_amount_positive"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     external_id: Mapped[str] = mapped_column(String(64), unique=True)

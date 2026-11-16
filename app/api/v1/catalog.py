@@ -6,6 +6,7 @@ from fastapi import APIRouter, Header, Query, Response, status
 from app.api.deps import CurrentUser, SessionDep, SettingsDep
 from app.routing import GeoPoint
 from app.schemas.catalog import (
+    AnalogRead,
     CatalogExport,
     CatalogStatus,
     ExportedOffer,
@@ -16,6 +17,7 @@ from app.schemas.catalog import (
     StoreWithDistance,
 )
 from app.schemas.common import error_responses
+from app.services import analogs as analogs_service
 from app.services import catalog as catalog_service
 
 router = APIRouter(tags=["Каталог"], responses=error_responses(401))
@@ -93,6 +95,31 @@ def search_products(
     """
     products = catalog_service.search_products(session, q, limit)
     return [ProductRead.model_validate(product) for product in products]
+
+
+@router.get("/products/{product_id}/analogs", responses=error_responses(404))
+def get_analogs(
+    product_id: int, _: CurrentUser, session: SessionDep, settings: SettingsDep
+) -> list[AnalogRead]:
+    """До трёх аналогов для замены товара (F10), от самого похожего.
+
+    Аналог того же вида, с тем же процентом в названии и фасовкой в пределах ±30 %,
+    и его сейчас можно купить. Пустой список означает, что подходящей замены нет.
+    В расчёт аналог попадает, только если пользователь подтвердил замену
+    (поле substitutions в POST /carts/{cart_id}/plans).
+    """
+    product = catalog_service.get_product(session, product_id)
+    analogs = analogs_service.find_analogs(
+        session, product, datetime.now(UTC), settings.offer_max_age_hours
+    )
+    return [
+        AnalogRead(
+            **ProductRead.model_validate(analog.product).model_dump(),
+            min_price_kopecks=analog.min_price_kopecks,
+            similarity=analog.similarity,
+        )
+        for analog in analogs
+    ]
 
 
 @router.get("/products/{product_id}", responses=error_responses(404))

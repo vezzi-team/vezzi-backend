@@ -1,0 +1,9 @@
+{
+  "_comment": "Конфигурация по умолчанию: символьный TF-IDF + проверка признаков. Выбрана по результатам оценки на data/v1 (см. EVALUATION.md). Порог 0.71 подобран на train.",
+  "version": "0.1.0",
+  "data_version": "v1",
+  "model": {"name": "", "query_prefix": "", "doc_prefix": ""},
+  "identical": {"method": "tfidf", "threshold": 0.71, "review_margin": 0.10, "use_attribute_check": true},
+  "analogs": {"method": "tfidf"},
+  "search": {"method": "tfidf"}
+}

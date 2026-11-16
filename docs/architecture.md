@@ -9,6 +9,7 @@ flowchart LR
     subgraph Server["VPS (Docker Compose)"]
         API["FastAPI<br/>app/"] --> DB[("PostgreSQL")]
         API --> OSRM["OSRM<br/>пешеходные маршруты<br/>по карте OSM"]
+        API --> ML["ML-модуль smartcart_ml<br/>поиск и аналоги<br/>(в том же процессе)"]
     end
     Admin["Команда данных<br/>Excel-каталог"] -. "vezzi import-catalog<br/>или /admin/catalog/imports" .-> API
 ```
@@ -25,6 +26,7 @@ flowchart LR
 | Сценарии | `app/services/` | Бизнес-операции: «зарегистрировать», «добавить в корзину», «сравнить сети», «посчитать планы», «начать план» |
 | Алгоритм | `app/planner/` | Чистые функции расчёта. Не знают про БД и HTTP, поэтому легко тестируются |
 | Внешние сервисы | `app/routing/` | Общий интерфейс `RoutingProvider` и его реализации |
+| ML-модуль | `ml/`, `app/services/ml_matcher.py` | Модуль команды для поиска и аналогов; backend только передаёт ему каталог |
 | Данные | `app/models/` | Таблицы PostgreSQL через SQLAlchemy |
 | Форматы | `app/schemas/` | Pydantic-схемы запросов и ответов; из них FastAPI строит Swagger |
 

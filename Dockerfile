@@ -10,6 +10,8 @@ ENV UV_COMPILE_BYTECODE=1 \
 
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
+# ML-модуль команды ставится как зависимость из папки ml/, поэтому копируем его заранее.
+COPY ml ./ml
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY README.md alembic.ini ./

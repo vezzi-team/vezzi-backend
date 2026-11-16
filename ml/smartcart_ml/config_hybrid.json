@@ -1,0 +1,9 @@
+{
+  "_comment": "Экспериментальный вариант: TF-IDF + семантическая модель e5. По результатам v1 не лучше config.json (см. EVALUATION.md). Порог 0.84 подобран на train.",
+  "version": "0.1.0-hybrid",
+  "data_version": "v1",
+  "model": {"name": "intfloat/multilingual-e5-small", "query_prefix": "query: ", "doc_prefix": "passage: "},
+  "identical": {"method": "hybrid", "threshold": 0.84, "review_margin": 0.10, "use_attribute_check": true},
+  "analogs": {"method": "hybrid"},
+  "search": {"method": "rrf", "rrf_k": 60, "depth": 100}
+}

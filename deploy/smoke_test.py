@@ -70,6 +70,14 @@ def run(base_url: str, insecure: bool) -> int:
                 json={"product_id": found[0]["id"], "quantity": 2},
             )
 
+        first = client.get("/api/v1/products/search", params={"q": QUERIES[0]}).json()[0]
+        analogs = client.get(f"/api/v1/products/{first['id']}/analogs")
+        check(
+            "аналоги для замены",
+            analogs.status_code == 200,
+            f"для «{first['name']}»: {len(analogs.json())}",
+        )
+
         chains = client.get(f"/api/v1/carts/{cart['id']}/chain-totals").json()["chains"]
         complete = [chain for chain in chains if chain["is_complete"]]
         check("сравнение сетей", bool(complete), f"полных корзин: {len(complete)} из {len(chains)}")
