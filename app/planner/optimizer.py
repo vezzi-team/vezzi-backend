@@ -6,7 +6,8 @@
    Неполные корзины отбрасываем, неиспользованные магазины убираем из набора.
 3. Для набора ищем самый быстрый порядок обхода и добавляем время покупок.
 4. Оставляем планы, которые укладываются в лимит времени, сортируем по цене,
-   затем по времени и числу магазинов, и отдаём до трёх лучших.
+   затем по времени и числу магазинов, и отдаём до трёх лучших (F08).
+   Отдельно отдаём до трёх самых быстрых: время, затем цена и число магазинов.
 5. База для экономии: самый дешёвый допустимый план в одном магазине.
 
 Мы не заявляем глобальный оптимум: план лучший среди описанных кандидатов (как требует F07).
@@ -14,7 +15,7 @@
 
 import enum
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from itertools import combinations
 
 from app.planner.assignment import AssignedItem, assign_cheapest
@@ -79,9 +80,19 @@ class Plan:
         return self.walking_seconds + self.shopping_seconds
 
     def sort_key(self) -> tuple[int, int, int, tuple[int, ...]]:
+        """Порядок F08: дешевле, при равной цене быстрее, затем меньше магазинов."""
         return (
             self.total_kopecks,
             self.total_seconds,
+            len(self.visits),
+            tuple(sorted(self.store_ids)),
+        )
+
+    def time_sort_key(self) -> tuple[int, int, int, tuple[int, ...]]:
+        """Порядок самых быстрых: быстрее, при равном времени дешевле, затем меньше магазинов."""
+        return (
+            self.total_seconds,
+            self.total_kopecks,
             len(self.visits),
             tuple(sorted(self.store_ids)),
         )
@@ -107,6 +118,8 @@ class PlanningResult:
     unavailable_product_ids: tuple[int, ...] = ()
     min_required_stores: int | None = None
     min_required_seconds: int | None = None
+    # До трёх самых быстрых планов. Могут совпадать с планами из plans.
+    fastest_plans: list[Plan] = field(default_factory=list)
 
 
 def savings_kopecks(plan: Plan, baseline: Plan | None) -> int | None:
@@ -155,7 +168,8 @@ def find_plans(data: PlanningInput) -> PlanningResult:
         )
 
     baseline = next((plan for plan in feasible if len(plan.visits) == 1), None)
-    return PlanningResult(plans=feasible[:MAX_PLANS], baseline=baseline)
+    fastest = sorted(feasible, key=Plan.time_sort_key)[:MAX_PLANS]
+    return PlanningResult(plans=feasible[:MAX_PLANS], baseline=baseline, fastest_plans=fastest)
 
 
 def _complete_plans(data: PlanningInput, candidates: list[int]) -> tuple[list[Plan], bool]:

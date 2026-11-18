@@ -124,6 +124,48 @@ class TestVisitOrder:
         assert best.seconds == min(brute_force)
 
 
+class TestFastestPlans:
+    """Кроме трёх самых дешёвых (F08) планировщик отдаёт три самых быстрых."""
+
+    M3: ClassVar = 3
+
+    def data(self) -> PlanningInput:
+        # M3 рядом со стартом, но там всё дороже. Самые дешёвые планы идут через M1 и M2.
+        return PlanningInput(
+            basket=[BasketItem(A, 1), BasketItem(B, 1)],
+            prices={A: {M1: 10000, M2: 12000, 3: 15000}, B: {M1: 13000, M2: 10000, 3: 15000}},
+            legs={
+                **{(START, store): minutes(10) for store in (M1, M2)},
+                (START, 3): minutes(1),
+                **{(a, b): minutes(5) for a in (M1, M2, 3) for b in (M1, M2, 3) if a != b},
+            },
+            max_stores=3,
+            max_total_seconds=120 * 60,
+            shopping_time=ShoppingTimeModel(),
+            store_formats={},
+        )
+
+    def test_fastest_plan_can_be_outside_the_three_cheapest(self) -> None:
+        result = find_plans(self.data())
+
+        assert [plan.store_ids for plan in result.plans] == [(M1, M2), (M2,), (M1,)]
+        assert result.fastest_plans[0].store_ids == (self.M3,)
+        assert result.fastest_plans[0].total_kopecks == 30000
+
+    def test_fastest_plans_are_sorted_by_time_then_price(self) -> None:
+        fastest = find_plans(self.data()).fastest_plans
+
+        assert len(fastest) == 3
+        keys = [(plan.total_seconds, plan.total_kopecks) for plan in fastest]
+        assert keys == sorted(keys)
+        # M1 и M2 одинаково далеко: при равном времени первым идёт более дешёвый M2.
+        assert [plan.store_ids for plan in fastest[1:]] == [(M2,), (M1,)]
+
+    def test_no_feasible_plans_means_no_fastest(self) -> None:
+        result = find_plans(replace(self.data(), max_total_seconds=60))
+        assert result.plans == result.fastest_plans == []
+
+
 class TestReturnToStart:
     """Обратный путь к старту: по ТЗ не нужен, включается по желанию пользователя."""
 

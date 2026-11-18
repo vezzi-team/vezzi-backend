@@ -3942,7 +3942,15 @@
             },
             "type": "array",
             "title": "Plans",
-            "description": "До трёх полных планов, лучший первым"
+            "description": "До трёх самых дешёвых полных планов, лучший первым (F08)"
+          },
+          "fastest_plans": {
+            "items": {
+              "$ref": "#/components/schemas/PlanRead"
+            },
+            "type": "array",
+            "title": "Fastest Plans",
+            "description": "До трёх самых быстрых полных планов, самый быстрый первым. План, который есть и в plans, приходит с тем же id"
           },
           "baseline": {
             "anyOf": [
@@ -3987,6 +3995,7 @@
         "required": [
           "status",
           "plans",
+          "fastest_plans",
           "baseline",
           "problem",
           "calculated_at",

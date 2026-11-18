@@ -104,6 +104,13 @@ def run(base_url: str, insecure: bool) -> int:
         milliseconds = (time.perf_counter() - started) * 1000
         body: dict[str, Any] = response.json()
         check("расчёт планов", body.get("status") == "ok", f"{milliseconds:.0f} мс")
+        cheap, fast = body["plans"][0], body["fastest_plans"][0]
+        check(
+            "самые быстрые планы",
+            fast["total_seconds"] <= cheap["total_seconds"],
+            f"дешёвый: {cheap['total_kopecks'] / 100:.2f} ₽ за {cheap['total_seconds'] // 60} мин, "
+            f"быстрый: {fast['total_kopecks'] / 100:.2f} ₽ за {fast['total_seconds'] // 60} мин",
+        )
         plan = body["plans"][0]
         check("маршрут по улицам", plan["route"]["uses_road_network"], plan["route"]["provider"])
 

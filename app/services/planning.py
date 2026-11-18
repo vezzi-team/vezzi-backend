@@ -115,26 +115,40 @@ def calculate_plans(
         if required_radius is not None and required_radius > request.radius_meters:
             result = replace(result, problem=PlanningProblem.RADIUS_TOO_SMALL)
 
-    # 4. Строим линии маршрутов и сохраняем планы.
-    routed = _with_routes(routing, result.plans, context)
-    if result.plans and not routed:
-        result = PlanningResult(plans=[], baseline=None, problem=PlanningProblem.ROUTE_UNAVAILABLE)
-
-    saved = [
-        _to_model(plan, route, rank, result.baseline, routing, context)
+    # 4. Строим линии маршрутов и сохраняем планы: самые дешёвые и самые быстрые.
+    # План из обоих списков сохраняется один раз, поэтому в ответе у него один id.
+    routed = _with_routes(routing, _cheapest_then_fastest(result), context)
+    models = {
+        plan.store_ids: _to_model(plan, route, rank, result.baseline, routing, context)
         for rank, (plan, route) in enumerate(routed, start=1)
-    ]
-    plans_service.replace_proposals(session, cart, saved)
+    }
+    cheapest = [models[plan.store_ids] for plan in result.plans if plan.store_ids in models]
+    fastest = [models[plan.store_ids] for plan in result.fastest_plans if plan.store_ids in models]
+    if result.plans and not cheapest:
+        result = PlanningResult(plans=[], baseline=None, problem=PlanningProblem.ROUTE_UNAVAILABLE)
+        models, fastest = {}, []
+    plans_service.replace_proposals(session, cart, list(models.values()))
 
     return PlanResponse(
-        status="ok" if saved else "no_plans",
-        plans=[PlanRead.model_validate(plan) for plan in saved],
-        baseline=_baseline(result.baseline, context) if saved else None,
+        status="ok" if cheapest else "no_plans",
+        plans=[PlanRead.model_validate(plan) for plan in cheapest],
+        fastest_plans=[PlanRead.model_validate(plan) for plan in fastest],
+        baseline=_baseline(result.baseline, context) if cheapest else None,
         problem=_problem(result, context, required_radius),
         calculated_at=now,
         offer_max_age_hours=settings.offer_max_age_hours,
         data_is_synthetic=active_import.is_synthetic,
     )
+
+
+def _cheapest_then_fastest(result: PlanningResult) -> list[optimizer.Plan]:
+    """Все планы для сохранения. Порядок задаёт их место (rank): по цене, как в F08.
+
+    Быстрые планы, которых нет среди трёх самых дешёвых, дороже их, поэтому идут после.
+    """
+    cheapest = {plan.store_ids for plan in result.plans}
+    extra = [plan for plan in result.fastest_plans if plan.store_ids not in cheapest]
+    return [*result.plans, *sorted(extra, key=optimizer.Plan.sort_key)]
 
 
 def _basket(

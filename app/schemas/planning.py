@@ -152,7 +152,15 @@ class PlanProblem(Schema):
 
 class PlanResponse(Schema):
     status: Literal["ok", "no_plans"]
-    plans: list[PlanRead] = Field(description="До трёх полных планов, лучший первым")
+    plans: list[PlanRead] = Field(
+        description="До трёх самых дешёвых полных планов, лучший первым (F08)"
+    )
+    fastest_plans: list[PlanRead] = Field(
+        description=(
+            "До трёх самых быстрых полных планов, самый быстрый первым. "
+            "План, который есть и в plans, приходит с тем же id"
+        )
+    )
     baseline: Baseline | None = Field(description="Самый дешёвый допустимый план в одном магазине")
     problem: PlanProblem | None = Field(description="Почему не удалось составить план")
     calculated_at: Timestamp

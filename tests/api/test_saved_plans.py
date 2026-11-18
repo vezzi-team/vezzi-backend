@@ -42,11 +42,13 @@ class TestCalculationIsSaved:
         self, client: TestClient, user_headers: dict[str, str], filled_cart: str
     ) -> None:
         first = plans_of(client, user_headers, filled_cart)
-        second = plans_of(client, user_headers, filled_cart)
+        second = calculate(client, user_headers, filled_cart).json()
 
         assert client.get(f"{PLANS}/{first[0]['id']}", headers=user_headers).status_code == 404
         history = client.get(PLANS, headers=user_headers).json()
-        assert {plan["id"] for plan in history} == {plan["id"] for plan in second}
+        # Сохранены и самые дешёвые, и самые быстрые планы последнего расчёта.
+        offered = {plan["id"] for plan in second["plans"] + second["fastest_plans"]}
+        assert {plan["id"] for plan in history} == offered
 
     def test_plan_keeps_its_prices_when_catalog_changes(
         self, client: TestClient, session: Session, user_headers: dict[str, str], filled_cart: str

@@ -15,7 +15,7 @@ from app.routing.fake import FakeRoutingProvider
 from app.routing.geo import haversine_meters
 from app.schemas.planning import PlanRequest
 from app.services.catalog import load_fresh_offers
-from tests.api.plan_helpers import CARTS, ITMO, calculate, product_id_by_name
+from tests.api.plan_helpers import CARTS, ITMO, PLANS, calculate, product_id_by_name
 
 
 class TestSuccessfulPlans:
@@ -60,6 +60,31 @@ class TestSuccessfulPlans:
             "latitude": last_store["latitude"],
             "longitude": last_store["longitude"],
         }
+
+    def test_fastest_plans_come_with_the_cheapest(
+        self, client: TestClient, user_headers: dict[str, str], filled_cart: str
+    ) -> None:
+        body = calculate(client, user_headers, filled_cart).json()
+        cheapest, fastest = body["plans"], body["fastest_plans"]
+
+        assert 1 <= len(fastest) <= 3
+        keys = [(p["total_seconds"], p["total_kopecks"], p["stores_count"]) for p in fastest]
+        assert keys == sorted(keys)
+        every = {plan["id"]: plan for plan in cheapest + fastest}
+        assert fastest[0]["total_seconds"] == min(p["total_seconds"] for p in every.values())
+        # Один и тот же план в обоих списках приходит с одним id.
+        by_stores = {}
+        for plan in cheapest + fastest:
+            stores = tuple(stop["store"]["id"] for stop in plan["stops"])
+            assert by_stores.setdefault(stores, plan["id"]) == plan["id"]
+
+    def test_fastest_plan_can_be_started(
+        self, client: TestClient, user_headers: dict[str, str], filled_cart: str
+    ) -> None:
+        fastest = calculate(client, user_headers, filled_cart).json()["fastest_plans"][0]
+        started = client.post(f"{PLANS}/{fastest['id']}/start", headers=user_headers)
+        assert started.status_code == 200
+        assert started.json()["status"] == "active"
 
     def test_way_back_to_start_on_request(
         self, client: TestClient, user_headers: dict[str, str], filled_cart: str
